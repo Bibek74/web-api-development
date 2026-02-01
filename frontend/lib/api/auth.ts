@@ -2,7 +2,6 @@ import axios, { AxiosError } from "axios";
 import axiosInstance from "./axios";
 import { API } from "./endpoints";
 
-// ---------- Types ----------
 export interface RegisterFormData {
   name: string;
   email: string;
@@ -15,14 +14,14 @@ export interface LoginFormData {
   password: string;
 }
 
-// Backend response types
 export interface RegisterResponse {
   success: boolean;
   message: string;
   data: {
-    id: string;
+    _id: string;
     name: string;
     email: string;
+    role: "user" | "admin";
   };
 }
 
@@ -31,13 +30,14 @@ export interface LoginResponse {
   message: string;
   token: string;
   data: {
-    id: string;
+    _id: string;
     name: string;
     email: string;
+    role: "user" | "admin";
+
   };
 }
 
-// ---------- API Calls ----------
 export const registerUser = async (data: RegisterFormData): Promise<RegisterResponse> => {
   try {
     const res = await axiosInstance.post<RegisterResponse>(API.AUTH.REGISTER, data);
