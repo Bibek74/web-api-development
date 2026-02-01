@@ -3,7 +3,6 @@
 import { loginUser, registerUser } from "@/lib/api/auth";
 import { cookies } from "next/headers";
 
-// Register
 export const handleRegister = async (formData: { name: string; email: string; password: string; confirmPassword: string }) => {
   try {
     const res = await registerUser(formData);
@@ -20,12 +19,10 @@ export const handleRegister = async (formData: { name: string; email: string; pa
   }
 };
 
-// Login
 export const handleLogin = async (formData: { email: string; password: string }) => {
   try {
     const res = await loginUser(formData);
 
-    // Get cookies object first (await it)
     const cookieStore = await cookies();
 
     cookieStore.set("token", res.token, {
@@ -35,6 +32,11 @@ export const handleLogin = async (formData: { email: string; password: string })
     });
 
     cookieStore.set("user", JSON.stringify(res.data), {
+      httpOnly: false,
+      path: "/",
+    });
+
+    cookieStore.set("role", res.data.role, {
       httpOnly: false,
       path: "/",
     });
