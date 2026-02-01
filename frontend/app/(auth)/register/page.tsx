@@ -5,7 +5,7 @@ export default function RegisterPage() {
   return (
     <main className="relative h-screen w-screen overflow-hidden">
       <Image
-        src="/img 2.png"
+        src="/img 4.png"
         alt="Register background"
         fill
         priority
