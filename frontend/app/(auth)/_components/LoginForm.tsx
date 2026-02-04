@@ -26,17 +26,8 @@ export default function LoginForm() {
     startTransition(async () => {
       const res = await handleLogin(values);
 
-      console.log("Login response:", res);
-
       if (res.success) {
         const role = res.data?.role;
-
-        console.log("User role:", role);
-
-        if (!role) {
-          alert("Error: User role not found in response");
-          return;
-        }
 
         if (role === "admin") {
           router.replace("/admin/users");

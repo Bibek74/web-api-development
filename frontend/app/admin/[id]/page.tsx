@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+<<<<<<< HEAD
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { API } from "@/lib/api/endpoints";
@@ -185,6 +186,26 @@ export default function AdminUserByIdPage() {
           <p style={{ color: "#a0a0a0" }}>{new Date(user.updatedAt).toLocaleString()}</p>
         </div>
       </div>
+=======
+import { useParams } from "next/navigation";
+
+export default function AdminUserByIdPage() {
+  const params = useParams();
+  const id = params?.id as string | undefined;
+
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1 style={{ fontSize: 24, fontWeight: 700 }}>/admin/[id]</h1>
+        {id ? (
+          <Link href={`/admin/${id}/edit`} style={{ textDecoration: "underline" }}>
+            Edit
+          </Link>
+        ) : null}
+      </div>
+
+      <p style={{ marginTop: 12 }}>ID: {id ?? "Loading..."}</p>
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
     </div>
   );
 }

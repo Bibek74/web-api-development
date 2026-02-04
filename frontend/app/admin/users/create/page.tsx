@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
+<<<<<<< HEAD
 import { useRouter } from "next/navigation";
 
 export default function AdminCreateUserPage() {
   const router = useRouter();
+=======
+import axiosInstance from "@/lib/api/axios";
+
+export default function AdminCreateUserPage() {
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +26,10 @@ export default function AdminCreateUserPage() {
     setLoading(true);
 
     try {
+<<<<<<< HEAD
+=======
+      // ✅ Use FormData even if no image
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
       const formData = new FormData();
       formData.append("name", name);
       formData.append("email", email);
@@ -27,6 +37,7 @@ export default function AdminCreateUserPage() {
       formData.append("role", role);
       if (image) formData.append("image", image);
 
+<<<<<<< HEAD
       const res = await fetch("/api/admin/users", {
         method: "POST",
         body: formData,
@@ -51,6 +62,25 @@ export default function AdminCreateUserPage() {
       }
     } catch (err: any) {
       setMessage(err?.message || "Something went wrong");
+=======
+      // ✅ IMPORTANT: send token in Authorization header
+      // token is stored as httpOnly cookie, so client JS can't read it.
+      // So for now: simplest is to also store a non-httpOnly token cookie OR store token in localStorage.
+      // If you haven't done that, create a Next API route proxy (I'll give you if needed).
+
+      const res = await axiosInstance.post("/api/admin/users", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setMessage(res.data?.message || "User created");
+      setName("");
+      setEmail("");
+      setPassword("");
+      setRole("user");
+      setImage(null);
+    } catch (err: any) {
+      setMessage(err?.response?.data?.message || err?.message || "Something went wrong");
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
     } finally {
       setLoading(false);
     }
@@ -68,7 +98,10 @@ export default function AdminCreateUserPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="john"
+<<<<<<< HEAD
               autoComplete="name"
+=======
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
               style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 6 }}
               required
             />
@@ -79,9 +112,13 @@ export default function AdminCreateUserPage() {
             <input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+<<<<<<< HEAD
               type="email"
               placeholder="john@test.com"
               autoComplete="email"
+=======
+              placeholder="john@test.com"
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
               style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 6 }}
               required
             />
@@ -94,7 +131,10 @@ export default function AdminCreateUserPage() {
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="password123"
+<<<<<<< HEAD
               autoComplete="new-password"
+=======
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
               style={{ width: "100%", padding: 8, border: "1px solid #ccc", borderRadius: 6 }}
               required
             />

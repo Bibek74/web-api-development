@@ -23,7 +23,11 @@ export default function AdminLayout({
       <main
         className="flex-1 p-8 bg-cover bg-center bg-no-repeat"
         style={{
+<<<<<<< HEAD
           backgroundImage: "url('/abhiabhi.webp')",
+=======
+          backgroundImage: "url('/authbackground.jpeg')",
+>>>>>>> 73a061defa90ed1972e6196403ab71724714d0af
         }}
       >
         <div className="min-h-full rounded-lg bg-black/80 p-6">
