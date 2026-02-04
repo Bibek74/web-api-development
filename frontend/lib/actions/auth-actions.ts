@@ -23,6 +23,14 @@ export const handleLogin = async (formData: { email: string; password: string })
   try {
     const res = await loginUser(formData);
 
+    // Check if login was successful and data exists
+    if (!res.success || !res.data) {
+      return {
+        success: false,
+        message: res.message || "Login failed",
+      };
+    }
+
     const cookieStore = await cookies();
 
     cookieStore.set("token", res.token, {
