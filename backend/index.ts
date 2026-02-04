@@ -15,6 +15,9 @@ dotenv.config();
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve static files from uploads folder
+app.use("/uploads", express.static("uploads"));
+
 app.use(cors({
     origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true

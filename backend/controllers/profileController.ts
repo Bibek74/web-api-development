@@ -115,4 +115,45 @@ export class ProfileController {
             });
         }
     };
+
+    // Upload Profile Image
+    uploadProfileImage = async (req: Request, res: Response): Promise<void> => {
+        try {
+            if (!req.file) {
+                res.status(400).send({
+                    message: "No image file provided",
+                    success: false
+                });
+                return;
+            }
+
+            const imageUrl = `/uploads/${req.file.filename}`;
+
+            // Update user profile with image URL
+            const updatedUser = await userModel.findOneAndUpdate(
+                { _id: req.user!.userId },
+                { $set: { profileImage: imageUrl } },
+                { new: true }
+            ).select("name email profileImage");
+
+            if (!updatedUser) {
+                res.status(404).send({
+                    message: "User not found",
+                    success: false
+                });
+                return;
+            }
+
+            res.send({
+                message: "Profile image uploaded successfully",
+                result: updatedUser,
+                success: true
+            });
+        } catch (err) {
+            res.status(500).send({
+                message: (err as Error).message ?? "Unknown error",
+                success: false
+            });
+        }
+    };
 }

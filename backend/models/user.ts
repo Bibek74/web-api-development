@@ -6,6 +6,7 @@ export interface IUser extends Document {
     password: string;
     role: string;
     posts: mongoose.Types.ObjectId[];
+    profileImage?: string;
 }
 
 const userSchema = new Schema<IUser>({
@@ -18,7 +19,8 @@ const userSchema = new Schema<IUser>({
             type: Schema.Types.ObjectId,
             ref: "posts"
         }
-    ]
+    ],
+    profileImage: { type: String }
 });
 
 export default mongoose.model<IUser>("users", userSchema);
