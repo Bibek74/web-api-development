@@ -46,33 +46,35 @@ export class AuthController {
             const user = await userModel.findOne({ email: validatedData.email });
             if (!user) {
                 res.send({ message: "Invalid credentials!", success: false });
-            } else {
-                bcrypt.compare(validatedData.password, user.password, (err, result) => {
-                    if (result) {
-                        const payload = {
-                            email: user.email,
-                            name: user.name,
-                            role: user.role,
-                            userId: (user._id as any).toString()
-                        };
-                        const token = generateToken(payload);
-                        res.send({
-                            message: "Logged in successfully",
-                            success: true,
-                            token: token,
-                            data: {
-                                _id: (user._id as any).toString(),
-                                name: user.name,
-                                email: user.email,
-                                role: user.role
-                            }
-                        });
-                    } else {
-                        res.send({
-                            message: "Something went wrong!",
-                            success: false
-                        });
+                return;
+            }
+
+            // Use promise-based bcrypt comparison
+            const isPasswordValid = await bcrypt.compare(validatedData.password, user.password);
+            
+            if (isPasswordValid) {
+                const payload = {
+                    email: user.email,
+                    name: user.name,
+                    role: user.role,
+                    userId: (user._id as any).toString()
+                };
+                const token = generateToken(payload);
+                res.send({
+                    message: "Logged in successfully",
+                    success: true,
+                    token: token,
+                    data: {
+                        _id: (user._id as any).toString(),
+                        name: user.name,
+                        email: user.email,
+                        role: user.role
                     }
+                });
+            } else {
+                res.send({
+                    message: "Invalid credentials!",
+                    success: false
                 });
             }
         } catch (err) {
