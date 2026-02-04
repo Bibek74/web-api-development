@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import authRouter from "./routes/authRoute.js";
 import profileRouter from "./routes/profileRoute.js";
 import postRouter from "./routes/postRoute.js";
+import adminRouter from "./routes/adminRoute.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { errorHandler } from "./middlewares/errorHandler.js";
@@ -26,6 +27,7 @@ app.use(cors({
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/post", postRouter);
+app.use("/api/admin", adminRouter);
 
 // Error handling middleware (must be last)
 app.use(errorHandler);
