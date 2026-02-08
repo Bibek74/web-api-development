@@ -14,4 +14,29 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// Add request interceptor to include auth token from cookies
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Only run in browser environment
+    if (typeof window !== "undefined") {
+      // Get auth_token from cookies
+      const cookies = document.cookie.split(";").reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split("=");
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, string>);
+
+      const token = cookies.auth_token;
+      
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default axiosInstance;
