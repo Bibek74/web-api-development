@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  const token = req.cookies.get("token")?.value;
+  const token = req.cookies.get("auth_token")?.value;
   const role = req.cookies.get("role")?.value;
 
   if (pathname.startsWith("/user")) {
