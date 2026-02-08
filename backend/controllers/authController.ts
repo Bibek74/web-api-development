@@ -60,6 +60,15 @@ export class AuthController {
                     userId: (user._id as any).toString()
                 };
                 const token = generateToken(payload);
+                
+                // Set JWT token in httpOnly cookie
+                res.cookie("auth_token", token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "lax",
+                    maxAge: 3000 * 1000 // Same as token expiry (in milliseconds)
+                });
+                
                 res.send({
                     message: "Logged in successfully",
                     success: true,
