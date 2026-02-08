@@ -24,7 +24,6 @@ export default function AdminUsersPage() {
       const res = await axiosInstance.get("/api/admin/users");
       setUsers(res.data?.data ?? []);
     } catch (err: unknown) {
-      // try to read server message (proxy response)
       // @ts-expect-error - axios error shape
       const serverMsg = err?.response?.data?.message;
       setError(serverMsg || (err instanceof Error ? err.message : "Failed to load users"));
@@ -33,100 +32,144 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleDelete = async (userId: string, userName: string) => {
+    if (!confirm(`Are you sure you want to delete user "${userName}"?`)) return;
+
+    try {
+      const res = await axiosInstance.delete(`/api/admin/users/${userId}`);
+      if (res.data?.success) {
+        alert("User deleted successfully!");
+        fetchUsers();
+      }
+    } catch (err: unknown) {
+      // @ts-expect-error - axios error shape
+      const serverMsg = err?.response?.data?.message;
+      alert(serverMsg || "Failed to delete user");
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700 }}>Admin Users</h1>
+    <div className="container mx-auto px-4 py-8 pt-20 max-w-7xl">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Admin Users</h1>
 
-        <div style={{ display: "flex", gap: 12 }}>
-          <button
-            onClick={fetchUsers}
-            style={{ padding: "8px 12px", border: "1px solid #ccc", borderRadius: 8 }}
-          >
-            Refresh
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={fetchUsers}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </button>
 
-          <Link
-            href="/admin/users/create"
-            style={{
-              padding: "8px 12px",
-              border: "1px solid #ccc",
-              borderRadius: 8,
-              textDecoration: "none",
-            }}
-          >
-            + Create User
-          </Link>
+            <Link
+              href="/admin/users/create"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Create User
+            </Link>
+          </div>
         </div>
-      </div>
 
-      {loading ? <p style={{ marginTop: 12 }}>Loading...</p> : null}
-      {error ? <p style={{ marginTop: 12 }}>{error}</p> : null}
+        {loading && (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        )}
 
-      {!loading && !error ? (
-        <div style={{ marginTop: 16, overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={th}>ID</th>
-                <th style={th}>Name</th>
-                <th style={th}>Email</th>
-                <th style={th}>Role</th>
-                <th style={th}>Actions</th>
-              </tr>
-            </thead>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
-            <tbody>
-              {users.length === 0 ? (
-                <tr>
-                  <td style={td} colSpan={5}>
-                    No users found
-                  </td>
+        {!loading && !error && (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Role</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
+                  <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
                 </tr>
-              ) : (
-                users.map((u) => (
-                  <tr key={u._id}>
-                    <td style={td}>{u._id}</td>
-                    <td style={td}>{u.name ?? "-"}</td>
-                    <td style={td}>{u.email ?? "-"}</td>
-                    <td style={td}>{u.role ?? "-"}</td>
-                    <td style={td}>
-                      <div style={{ display: "flex", gap: 10 }}>
-                      <Link href={`/admin/${u._id}`} style={a}>
-                          View
-                      </Link>
-                      <Link href={`/admin/${u._id}/edit`} style={a}>
-                          Edit
-                      </Link>
-                      </div>
+              </thead>
+
+              <tbody>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-8 text-gray-500">
+                      No users found
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
+                ) : (
+                  users.map((u) => (
+                    <tr key={u._id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        <div className="font-medium text-gray-900">{u.name ?? "-"}</div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-600">{u.email ?? "-"}</td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            u.role === "admin"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-blue-100 text-blue-800"
+                          }`}
+                        >
+                          {u.role ?? "-"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-gray-500 text-sm font-mono">
+                        {u._id.substring(0, 8)}...
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/admin/${u._id}`}
+                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                          >
+                            View
+                          </Link>
+                          <Link
+                            href={`/admin/${u._id}/edit`}
+                            className="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm"
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(u._id, u.name || "this user")}
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {!loading && !error && users.length > 0 && (
+          <div className="mt-4 text-sm text-gray-600">
+            Total users: <span className="font-semibold">{users.length}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
-
-const th: React.CSSProperties = {
-  textAlign: "left",
-  padding: 10,
-  borderBottom: "1px solid #ddd",
-  fontWeight: 700,
-};
-
-const td: React.CSSProperties = {
-  padding: 10,
-  borderBottom: "1px solid #eee",
-};
-
-const a: React.CSSProperties = {
-  textDecoration: "underline",
-};
