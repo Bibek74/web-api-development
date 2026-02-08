@@ -1,6 +1,47 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    // Check if user is logged in by checking cookies
+    const checkAuth = () => {
+      const userCookie = document.cookie
+        .split("; ")
+        .find(row => row.startsWith("user="));
+      
+      if (userCookie) {
+        try {
+          const userData = JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
+          setIsLoggedIn(true);
+          setUserName(userData.name || "User");
+        } catch (error) {
+          setIsLoggedIn(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = () => {
+    // Clear all auth cookies
+    document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    
+    setIsLoggedIn(false);
+    router.push("/login");
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
       <div className="relative mx-auto flex h-14 max-w-6xl items-center px-4">
@@ -19,13 +60,29 @@ export default function Header() {
 
         {/* Auth Buttons */}
         <div className="ml-auto flex items-center gap-3 pr-2">
-          <Link href="/login" className="h-9 inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/20">
-            Log in
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <span className="text-sm text-white/80 hidden sm:inline">
+                Welcome, {userName}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="h-9 inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/20"
+              >
+                Log out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="h-9 inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/20">
+                Log in
+              </Link>
 
-          <Link href="/register" className="h-9 inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/20">
-            Sign up
-          </Link>
+              <Link href="/register" className="h-9 inline-flex items-center justify-center rounded-md border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white backdrop-blur-md hover:bg-white/20">
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
 
       </div>

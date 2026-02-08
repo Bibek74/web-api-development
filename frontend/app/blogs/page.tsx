@@ -108,7 +108,7 @@ export default function BlogsPage() {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8">
+            <div className="container mx-auto px-4 py-8 pt-20">
                 <div className="flex items-center justify-center min-h-[400px]">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
@@ -118,7 +118,7 @@ export default function BlogsPage() {
 
     if (authError) {
         return (
-            <div className="container mx-auto px-4 py-8 max-w-2xl">
+            <div className="container mx-auto px-4 py-8 pt-20 max-w-2xl">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
                     <div className="mb-4">
                         <svg
@@ -151,7 +151,7 @@ export default function BlogsPage() {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <div className="container mx-auto px-4 py-8 pt-20 max-w-5xl">
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold text-gray-900">All Blog Posts</h1>
                 <div className="flex gap-3">
