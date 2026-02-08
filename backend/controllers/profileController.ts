@@ -15,9 +15,18 @@ export class ProfileController {
                 });
                 return;
             }
+            
+            // Return complete user profile data
             res.send({
                 message: `Hi! ${user.name}, Welcome to your profile.`,
                 posts: user.posts,
+                result: {
+                    _id: user._id.toString(),
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    profileImage: user.profileImage || ""
+                },
                 success: true
             });
         } catch (err) {
@@ -41,7 +50,8 @@ export class ProfileController {
                         name: validatedData.name,
                         email: validatedData.email
                     }
-                }
+                },
+                { new: true }
             );
             if (!updateProfile) {
                 res.send({
@@ -50,10 +60,16 @@ export class ProfileController {
                 });
                 return;
             }
-            const user = await userModel.findOne({ _id: req.user!.userId }).select("name email");
+            
             res.send({
                 message: "Profile Updated",
-                result: user,
+                result: {
+                    _id: updateProfile._id.toString(),
+                    name: updateProfile.name,
+                    email: updateProfile.email,
+                    role: updateProfile.role,
+                    profileImage: updateProfile.profileImage || ""
+                },
                 success: true
             });
         } catch (err) {
@@ -127,14 +143,13 @@ export class ProfileController {
                 return;
             }
 
-            const imageUrl = `/uploads/${req.file.filename}`;
-
-            // Update user profile with image URL
+            const imagePath = `/uploads/${req.file.filename}`;
+            
             const updatedUser = await userModel.findOneAndUpdate(
                 { _id: req.user!.userId },
-                { $set: { profileImage: imageUrl } },
+                { $set: { profileImage: imagePath } },
                 { new: true }
-            ).select("name email profileImage");
+            );
 
             if (!updatedUser) {
                 res.status(404).send({
@@ -146,7 +161,13 @@ export class ProfileController {
 
             res.send({
                 message: "Profile image uploaded successfully",
-                result: updatedUser,
+                result: {
+                    _id: updatedUser._id.toString(),
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    role: updatedUser.role,
+                    profileImage: updatedUser.profileImage || ""
+                },
                 success: true
             });
         } catch (err) {
