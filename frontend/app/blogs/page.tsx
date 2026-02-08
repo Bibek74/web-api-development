@@ -320,7 +320,7 @@ export default function BlogsPage() {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {posts.map((post) => (
+                        {posts.map((post, index) => (
                             <article
                                 key={post._id}
                                 className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
