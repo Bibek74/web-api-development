@@ -6,7 +6,7 @@ const postRouter = express.Router();
 const postController = new PostController();
 
 postRouter.post("/new", jwtAuthMiddleware, postController.addNewPost);
-postRouter.get("/all", jwtAuthMiddleware, postController.getAllPost);
+postRouter.get("/all", postController.getAllPost); // Public endpoint - no auth required
 postRouter.post("/like-unlike/:id", jwtAuthMiddleware, postController.likeUnlikeById);
 postRouter.get("/user/likes/:id", jwtAuthMiddleware, postController.getTotalLikesById);
 postRouter.put("/update/:id", jwtAuthMiddleware, postController.updatePostById);
