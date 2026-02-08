@@ -53,10 +53,10 @@ export default function AdminUsersPage() {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8 pt-20 max-w-7xl">
-      <div className="bg-white rounded-lg shadow-lg p-6">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="bg-slate-800/50 backdrop-blur-xl rounded-lg shadow-lg p-6 border border-white/10">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Users</h1>
+          <h1 className="text-3xl font-bold text-white">Admin Users</h1>
 
           <div className="flex gap-3">
             <button
@@ -83,12 +83,12 @@ export default function AdminUsersPage() {
 
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-lg mb-4">
             {error}
           </div>
         )}
@@ -97,41 +97,41 @@ export default function AdminUsersPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Email</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">Role</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700">ID</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-700">Actions</th>
+                <tr className="border-b-2 border-white/20">
+                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Name</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Email</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Role</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-300">ID</th>
+                  <th className="text-right py-3 px-4 font-semibold text-slate-300">Actions</th>
                 </tr>
               </thead>
 
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-500">
+                    <td colSpan={5} className="text-center py-8 text-slate-400">
                       No users found
                     </td>
                   </tr>
                 ) : (
                   users.map((u) => (
-                    <tr key={u._id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={u._id} className="border-b border-white/10 hover:bg-slate-700/30">
                       <td className="py-3 px-4">
-                        <div className="font-medium text-gray-900">{u.name ?? "-"}</div>
+                        <div className="font-medium text-white">{u.name ?? "-"}</div>
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{u.email ?? "-"}</td>
+                      <td className="py-3 px-4 text-slate-300">{u.email ?? "-"}</td>
                       <td className="py-3 px-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
                             u.role === "admin"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-blue-100 text-blue-800"
+                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                              : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
                           }`}
                         >
                           {u.role ?? "-"}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-gray-500 text-sm font-mono">
+                      <td className="py-3 px-4 text-slate-400 text-sm font-mono">
                         {u._id.substring(0, 8)}...
                       </td>
                       <td className="py-3 px-4">
@@ -165,8 +165,8 @@ export default function AdminUsersPage() {
         )}
 
         {!loading && !error && users.length > 0 && (
-          <div className="mt-4 text-sm text-gray-600">
-            Total users: <span className="font-semibold">{users.length}</span>
+          <div className="mt-4 text-sm text-slate-300">
+            Total users: <span className="font-semibold text-white">{users.length}</span>
           </div>
         )}
       </div>
