@@ -33,20 +33,25 @@ export const handleLogin = async (formData: { email: string; password: string })
 
     const cookieStore = await cookies();
 
-    cookieStore.set("token", res.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+    // Store auth_token (accessible from client side)
+    cookieStore.set("auth_token", res.token, {
+      httpOnly: false,
       path: "/",
+      sameSite: "lax",
+      maxAge: 3000, // Same as backend token expiry (in seconds)
     });
 
+    // Store user info and role (not httpOnly so client can read)
     cookieStore.set("user", JSON.stringify(res.data), {
       httpOnly: false,
       path: "/",
+      sameSite: "lax",
     });
 
     cookieStore.set("role", res.data.role, {
       httpOnly: false,
       path: "/",
+      sameSite: "lax",
     });
 
     return {
