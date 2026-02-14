@@ -7,6 +7,8 @@ export interface IUser extends Document {
     role: string;
     posts: mongoose.Types.ObjectId[];
     profileImage?: string;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
 }
 
 const userSchema = new Schema<IUser>({
@@ -20,7 +22,11 @@ const userSchema = new Schema<IUser>({
             ref: "posts"
         }
     ],
-    profileImage: { type: String }
+    profileImage: { type: String },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date }
+}, {
+    timestamps: true
 });
 
 export default mongoose.model<IUser>("users", userSchema);

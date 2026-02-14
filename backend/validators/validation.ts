@@ -19,6 +19,16 @@ export const updatePasswordSchema = z.object({
     confirm_new_password: z.string().min(6, "Confirm password must be at least 6 characters")
 });
 
+export const forgotPasswordSchema = z.object({
+    email: z.string().email("Invalid email address")
+});
+
+export const resetPasswordSchema = z.object({
+    token: z.string().min(1, "Reset token is required"),
+    new_password: z.string().min(6, "New password must be at least 6 characters"),
+    confirm_new_password: z.string().min(6, "Confirm password must be at least 6 characters")
+});
+
 // Post Validation Schemas
 export const createPostSchema = z.object({
     content: z.string().min(1, "Content cannot be empty").max(5000, "Content is too long")
