@@ -14,6 +14,16 @@ export interface LoginFormData {
   password: string;
 }
 
+export interface ForgotPasswordFormData {
+  email: string;
+}
+
+export interface ResetPasswordFormData {
+  token: string;
+  new_password: string;
+  confirm_new_password: string;
+}
+
 export interface RegisterResponse {
   success: boolean;
   message: string;
@@ -35,6 +45,15 @@ export interface LoginResponse {
     email: string;
     role: "user" | "admin";
 
+  };
+}
+
+export interface BasicResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    resetToken?: string;
+    resetLink?: string;
   };
 }
 
@@ -61,6 +80,40 @@ export const loginUser = async (data: LoginFormData): Promise<LoginResponse> => 
     return res.data;
   } catch (err: unknown) {
     let message = "Login failed";
+
+    if (err instanceof AxiosError && err.response) {
+      message = err.response.data?.message || message;
+    } else if (err instanceof Error) {
+      message = err.message;
+    }
+
+    throw new Error(message);
+  }
+};
+
+export const forgotPassword = async (data: ForgotPasswordFormData): Promise<BasicResponse> => {
+  try {
+    const res = await axiosInstance.post<BasicResponse>(API.AUTH.FORGOT_PASSWORD, data);
+    return res.data;
+  } catch (err: unknown) {
+    let message = "Failed to request password reset";
+
+    if (err instanceof AxiosError && err.response) {
+      message = err.response.data?.message || message;
+    } else if (err instanceof Error) {
+      message = err.message;
+    }
+
+    throw new Error(message);
+  }
+};
+
+export const resetPassword = async (data: ResetPasswordFormData): Promise<BasicResponse> => {
+  try {
+    const res = await axiosInstance.post<BasicResponse>(API.AUTH.RESET_PASSWORD, data);
+    return res.data;
+  } catch (err: unknown) {
+    let message = "Failed to reset password";
 
     if (err instanceof AxiosError && err.response) {
       message = err.response.data?.message || message;

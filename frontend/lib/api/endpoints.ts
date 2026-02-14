@@ -2,7 +2,9 @@
 export const API = {
     AUTH: {
         REGISTER: "/api/auth/signup",
-        LOGIN: "/api/auth/login"
+        LOGIN: "/api/auth/login",
+        FORGOT_PASSWORD: "/api/auth/forgot-password",
+        RESET_PASSWORD: "/api/auth/reset-password"
     },
     POST: {
         ALL: "/api/post/all",

@@ -1,6 +1,6 @@
 "use server";
 
-import { loginUser, registerUser } from "@/lib/api/auth";
+import { forgotPassword, loginUser, registerUser, resetPassword } from "@/lib/api/auth";
 import { cookies } from "next/headers";
 
 export const handleRegister = async (formData: { name: string; email: string; password: string; confirmPassword: string }) => {
@@ -58,6 +58,41 @@ export const handleLogin = async (formData: { email: string; password: string })
       success: true,
       message: res.message,
       data: res.data,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : "Something went wrong",
+    };
+  }
+};
+
+export const handleForgotPassword = async (formData: { email: string }) => {
+  try {
+    const res = await forgotPassword(formData);
+    return {
+      success: res.success,
+      message: res.message,
+      data: res.data,
+    };
+  } catch (err: unknown) {
+    return {
+      success: false,
+      message: err instanceof Error ? err.message : "Something went wrong",
+    };
+  }
+};
+
+export const handleResetPassword = async (formData: {
+  token: string;
+  new_password: string;
+  confirm_new_password: string;
+}) => {
+  try {
+    const res = await resetPassword(formData);
+    return {
+      success: res.success,
+      message: res.message,
     };
   } catch (err: unknown) {
     return {
