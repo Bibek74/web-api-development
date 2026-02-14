@@ -40,7 +40,10 @@ export class PostController {
     // GET All Post
     getAllPost = async (req: Request, res: Response): Promise<void> => {
         try {
-            const allPosts = await postModel.find();
+            const allPosts = await postModel
+                .find()
+                .populate("user", "name email")
+                .sort({ date: -1 });
             res.send({
                 message: "Posts fetched successfully!",
                 result: allPosts,
@@ -154,7 +157,16 @@ export class PostController {
     // View My Posts
     viewMyPost = async (req: Request, res: Response): Promise<void> => {
         try {
-            const myPosts = await userModel.findOne({ _id: req.user!.userId }).select("posts").populate("posts");
+            const myPosts = await userModel
+                .findOne({ _id: req.user!.userId })
+                .select("posts")
+                .populate({
+                    path: "posts",
+                    populate: {
+                        path: "user",
+                        select: "name email"
+                    }
+                });
             res.send({
                 message: `Author: ${req.user!.name}`,
                 result: myPosts,
