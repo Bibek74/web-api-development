@@ -12,17 +12,38 @@ type UserRow = {
   createdAt?: string;
 };
 
+type PaginationMeta = {
+  page: number;
+  limit: number;
+  totalUsers: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState<PaginationMeta>({
+    page: 1,
+    limit: 10,
+    totalUsers: 0,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = 1) => {
     setError("");
     setLoading(true);
     try {
-      const res = await axiosInstance.get("/api/admin/users");
+      const res = await axiosInstance.get(`/api/admin/users?page=${page}&limit=${pagination.limit}`);
       setUsers(res.data?.data ?? []);
+      if (res.data?.pagination) {
+        setPagination(res.data.pagination);
+      }
     } catch (err: unknown) {
       // @ts-expect-error - axios error shape
       const serverMsg = err?.response?.data?.message;
@@ -49,8 +70,19 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const filteredUsers = users.filter((u) => {
+    const q = search.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      (u.name || "").toLowerCase().includes(q) ||
+      (u.email || "").toLowerCase().includes(q) ||
+      (u.role || "").toLowerCase().includes(q)
+    );
+  });
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -60,7 +92,7 @@ export default function AdminUsersPage() {
 
           <div className="flex gap-3">
             <button
-              onClick={fetchUsers}
+              onClick={() => fetchUsers(pagination.page)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,6 +111,16 @@ export default function AdminUsersPage() {
               Create User
             </Link>
           </div>
+        </div>
+
+        <div className="mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search current page users by name/email/role"
+            className="w-full md:w-96 px-3 py-2 rounded-md bg-slate-900/50 border border-white/15 text-white placeholder:text-slate-400"
+          />
         </div>
 
         {loading && (
@@ -107,14 +149,14 @@ export default function AdminUsersPage() {
               </thead>
 
               <tbody>
-                {users.length === 0 ? (
+                {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="text-center py-8 text-slate-400">
                       No users found
                     </td>
                   </tr>
                 ) : (
-                  users.map((u) => (
+                  filteredUsers.map((u) => (
                     <tr key={u._id} className="border-b border-white/10 hover:bg-slate-700/30">
                       <td className="py-3 px-4">
                         <div className="font-medium text-white">{u.name ?? "-"}</div>
@@ -165,9 +207,32 @@ export default function AdminUsersPage() {
         )}
 
         {!loading && !error && users.length > 0 && (
-          <div className="mt-4 text-sm text-slate-300">
-            Total users: <span className="font-semibold text-white">{users.length}</span>
-          </div>
+          <>
+            <div className="mt-4 text-sm text-slate-300">
+              Showing <span className="font-semibold text-white">{users.length}</span> users on page{" "}
+              <span className="font-semibold text-white">{pagination.page}</span> of{" "}
+              <span className="font-semibold text-white">{pagination.totalPages}</span>
+              {" · "}
+              Total users: <span className="font-semibold text-white">{pagination.totalUsers}</span>
+            </div>
+
+            <div className="mt-4 flex items-center gap-3">
+              <button
+                onClick={() => fetchUsers(pagination.page - 1)}
+                disabled={!pagination.hasPrevPage || loading}
+                className="px-3 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                onClick={() => fetchUsers(pagination.page + 1)}
+                disabled={!pagination.hasNextPage || loading}
+                className="px-3 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </>
         )}
       </div>
     </div>
