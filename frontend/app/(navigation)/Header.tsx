@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
 
@@ -30,7 +31,7 @@ export default function Header() {
     };
 
     checkAuth();
-  }, []);
+  }, [pathname]);
 
   const handleLogout = () => {
     // Clear all auth cookies

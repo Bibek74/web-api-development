@@ -128,20 +128,20 @@ export default function BlogsPage() {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-8 pt-20">
-                <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="min-h-screen bg-slate-950 text-white pt-24 px-4">
+                <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[60vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="min-h-screen bg-slate-950 text-slate-100">
             {/* Hero Section for Non-Authenticated Users */}
             {!isAuthenticated && (
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-12">
-                    <div className="container mx-auto px-4 max-w-5xl">
+                <div className="bg-linear-to-r from-blue-700 to-purple-700 text-white py-12">
+                    <div className="container mx-auto px-4 max-w-6xl">
                         <div className="text-center">
                             <h1 className="text-4xl md:text-5xl font-bold mb-4">
                                 ✨ Welcome to Blogify
@@ -168,63 +168,64 @@ export default function BlogsPage() {
                 </div>
             )}
 
-            <div className="container mx-auto px-4 py-8 max-w-5xl">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold text-gray-900">
-                        {isAuthenticated ? "All Blog Posts" : "Latest Posts"}
-                    </h2>
-                    <div className="flex gap-3">
-                        {isAuthenticated && (
-                            <button
-                                onClick={() => setShowCreateForm(!showCreateForm)}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-md"
-                            >
-                                <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
+            <div className="container mx-auto px-4 pt-6 pb-12 max-w-6xl">
+                <div className="mb-4 flex items-center justify-start">
+                    <button
+                        onClick={() => router.push('/home')}
+                        className="min-h-11 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 border border-white/10"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back to Home
+                    </button>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur p-5 md:p-6 mb-8">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h2 className="text-3xl font-bold text-white">
+                                {isAuthenticated ? "All Blog Posts" : "Latest Posts"}
+                            </h2>
+                            <p className="text-sm text-slate-300 mt-1">
+                                Explore stories from the community and interact with posts.
+                            </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-3">
+                            {isAuthenticated && (
+                                <button
+                                    onClick={() => setShowCreateForm(!showCreateForm)}
+                                    className="min-h-11 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
                                 >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 4v16m8-8H4"
-                                    />
-                                </svg>
-                                {showCreateForm ? "Cancel" : "Create Post"}
-                            </button>
-                        )}
-                        <button
-                            onClick={fetchPosts}
-                            disabled={refreshing}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-md"
-                        >
-                            <svg
-                                className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    {showCreateForm ? "Close Creator" : "Create Post"}
+                                </button>
+                            )}
+
+                            <button
+                                onClick={fetchPosts}
+                                disabled={refreshing}
+                                className="min-h-11 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                />
-                            </svg>
-                            Refresh
-                        </button>
+                                <svg className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Refresh
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {/* Create Post Form - Only for Authenticated Users */}
                 {isAuthenticated && showCreateForm && (
-                    <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New Blog Post</h2>
+                    <div className="bg-slate-900/70 rounded-xl border border-white/10 p-6 mb-6">
+                        <h2 className="text-xl font-semibold text-white mb-4">Create New Blog Post</h2>
                         <form onSubmit={handleCreatePost}>
                             <div className="mb-4">
-                                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="content" className="block text-sm font-medium text-slate-200 mb-2">
                                     Post Content
                                 </label>
                                 <textarea
@@ -232,30 +233,30 @@ export default function BlogsPage() {
                                     value={newPostContent}
                                     onChange={(e) => setNewPostContent(e.target.value)}
                                     rows={6}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                     placeholder="Write your blog post here... (Max 5000 characters)"
                                     maxLength={5000}
                                     required
                                 />
-                                <div className="mt-1 text-sm text-gray-500 text-right">
+                                <div className="mt-1 text-sm text-slate-400 text-right">
                                     {newPostContent.length} / 5000 characters
                                 </div>
                             </div>
-                            <div className="flex justify-end gap-3">
+                            <div className="flex flex-wrap justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={() => {
                                         setShowCreateForm(false);
                                         setNewPostContent("");
                                     }}
-                                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                    className="min-h-11 px-4 py-2 border border-white/20 text-slate-200 rounded-lg hover:bg-white/10 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !newPostContent.trim()}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                    className="min-h-11 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -287,8 +288,8 @@ export default function BlogsPage() {
                 )}
 
                 {posts.length === 0 ? (
-                    <div className="text-center py-16 bg-white rounded-lg shadow-md">
-                        <div className="text-gray-400 mb-4">
+                    <div className="text-center py-16 bg-slate-900/70 rounded-xl border border-white/10">
+                        <div className="text-slate-400 mb-4">
                             <svg
                                 className="mx-auto h-16 w-16"
                                 fill="none"
@@ -303,8 +304,8 @@ export default function BlogsPage() {
                                 />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">No posts yet</h3>
-                        <p className="text-gray-500 mb-6">
+                        <h3 className="text-xl font-semibold text-white mb-2">No posts yet</h3>
+                        <p className="text-slate-400 mb-6">
                             {isAuthenticated 
                                 ? "Be the first to share your thoughts!"
                                 : "Check back later for amazing content from our community."}
@@ -312,7 +313,7 @@ export default function BlogsPage() {
                         {isAuthenticated && (
                             <button
                                 onClick={() => setShowCreateForm(true)}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                className="min-h-11 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                             >
                                 Create First Post
                             </button>
@@ -320,21 +321,21 @@ export default function BlogsPage() {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {posts.map((post, index) => (
+                        {posts.map((post) => (
                             <article
                                 key={post._id}
-                                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
+                                className="bg-slate-900/75 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 p-6"
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
                                             {post.user?.name?.[0]?.toUpperCase() || "U"}
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-gray-900 text-lg">
+                                            <h3 className="font-semibold text-white text-lg">
                                                 {post.user?.name || "Unknown User"}
                                             </h3>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-slate-400">
                                                 {formatDate(post.date)}
                                             </p>
                                         </div>
@@ -342,7 +343,7 @@ export default function BlogsPage() {
                                     {isAuthenticated && (
                                         <button
                                             onClick={() => handleDelete(post._id)}
-                                            className="text-red-600 hover:text-red-800 transition-colors p-2 hover:bg-red-50 rounded"
+                                            className="min-h-10 min-w-10 text-red-300 hover:text-red-200 transition-colors p-2 hover:bg-red-500/20 rounded"
                                             title="Delete post"
                                         >
                                             <svg
@@ -363,18 +364,18 @@ export default function BlogsPage() {
                                 </div>
 
                                 <div className="mb-4">
-                                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed text-base">
+                                    <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base">
                                         {post.content}
                                     </p>
                                 </div>
 
-                                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                                <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
                                     <button
                                         onClick={() => handleLike(post._id)}
                                         className={`flex items-center gap-2 transition-colors ${
                                             isAuthenticated 
-                                                ? "text-gray-600 hover:text-red-500" 
-                                                : "text-gray-400 cursor-pointer hover:text-red-400"
+                                                ? "text-slate-300 hover:text-red-400" 
+                                                : "text-slate-500 cursor-pointer hover:text-red-300"
                                         }`}
                                         title={isAuthenticated ? "Like this post" : "Sign in to like"}
                                     >
@@ -396,7 +397,7 @@ export default function BlogsPage() {
                                         </span>
                                     </button>
                                     {!isAuthenticated && (
-                                        <span className="text-sm text-gray-400 ml-auto">
+                                        <span className="text-sm text-slate-400 ml-auto">
                                             👉 Sign in to interact
                                         </span>
                                     )}
@@ -408,7 +409,7 @@ export default function BlogsPage() {
 
                 {/* Call to Action for Non-Authenticated Users */}
                 {!isAuthenticated && posts.length > 0 && (
-                    <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-center text-white shadow-xl">
+                    <div className="mt-12 bg-linear-to-r from-blue-700 to-purple-700 rounded-2xl p-8 text-center text-white shadow-xl">
                         <h3 className="text-2xl font-bold mb-3">Ready to share your story?</h3>
                         <p className="text-blue-100 mb-6 text-lg">
                             Join our community and start creating amazing content today!

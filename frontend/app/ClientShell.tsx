@@ -10,7 +10,7 @@ export default function ClientShell({
 }) {
   const pathname = usePathname();
 
-  const hideHeader = pathname.startsWith("/admin");
+  const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs";
 
   if (hideHeader) {
     return <>{children}</>;
