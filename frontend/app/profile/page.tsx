@@ -5,6 +5,7 @@ import { profileApi, UserProfile } from "@/lib/api/profile";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
+import { setSessionUser } from "@/lib/user-session";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -44,6 +45,13 @@ export default function ProfilePage() {
                 setProfile(userData);
                 setPosts(response.posts || []);
                 setEditData({ name: userData.name, email: userData.email });
+                setSessionUser({
+                    _id: userData._id,
+                    name: userData.name,
+                    email: userData.email,
+                    role: userData.role,
+                    profileImage: userData.profileImage,
+                });
             } else {
                 setAuthError(true);
             }
@@ -78,14 +86,13 @@ export default function ProfilePage() {
                     profileImage: response.result!.profileImage || prev.profileImage
                 } : null);
                 setIsEditMode(false);
-                
-                // Update cookie with new data
-                document.cookie = `user=${encodeURIComponent(JSON.stringify({
+                setSessionUser({
                     _id: response.result._id,
                     name: response.result.name,
                     email: response.result.email,
-                    role: response.result.role
-                }))}; path=/; sameSite=lax`;
+                    role: response.result.role,
+                    profileImage: response.result.profileImage || "",
+                });
                 
                 toast.success("Profile updated successfully!");
             } else {
@@ -127,6 +134,13 @@ export default function ProfilePage() {
                     _id: response.result!._id,
                     role: response.result!.role
                 } : null);
+                setSessionUser({
+                    _id: response.result._id,
+                    name: response.result.name,
+                    email: response.result.email,
+                    role: response.result.role,
+                    profileImage: response.result.profileImage || "",
+                });
                 toast.success("Profile image uploaded successfully!");
             } else {
                 toast.error(response.message || "Failed to upload image");
