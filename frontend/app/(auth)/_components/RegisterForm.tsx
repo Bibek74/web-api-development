@@ -7,9 +7,11 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RegisterData, registerSchema } from "../schema";
 import { handleRegister } from "@/lib/actions/auth-actions";
+import { useToast } from "@/lib/toast";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const toast = useToast();
 
   const {
     register,
@@ -27,8 +29,9 @@ export default function RegisterForm() {
       const res = await handleRegister(values);
       if (res.success) {
         router.push("/login");
+        toast.success("Account created successfully!");
       } else {
-        alert(res.message);
+        toast.error(res.message);
       }
     });
   };
