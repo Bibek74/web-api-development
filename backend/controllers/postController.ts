@@ -42,7 +42,7 @@ export class PostController {
         try {
             const allPosts = await postModel
                 .find()
-                .populate("user", "name email")
+                .populate("user", "name email profileImage")
                 .sort({ date: -1 });
             res.send({
                 message: "Posts fetched successfully!",
@@ -181,7 +181,7 @@ export class PostController {
                     path: "posts",
                     populate: {
                         path: "user",
-                        select: "name email"
+                        select: "name email profileImage"
                     }
                 });
             res.send({
