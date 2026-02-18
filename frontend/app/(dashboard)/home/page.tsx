@@ -84,7 +84,7 @@ export default function HomePage() {
       </section>
 
       {/* Read Now Section - Recent Posts */}
-      <section className="relative bg-gradient-to-b from-gray-900 to-black py-20 px-6 md:px-16">
+      <section className="relative bg-linear-to-b from-gray-900 to-black py-20 px-6 md:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             <div>
@@ -147,7 +147,7 @@ export default function HomePage() {
                   <div className="p-6">
                     {/* Author Info */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                         {post.user?.name?.[0]?.toUpperCase() || "U"}
                       </div>
                       <div>
@@ -197,8 +197,11 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Link
+              href="/blogs"
+              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+            >
+              <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
@@ -207,11 +210,14 @@ export default function HomePage() {
               <p className="text-white/70">
                 Create and publish your stories with our intuitive editor
               </p>
-            </div>
+            </Link>
 
             {/* Feature 2 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Link
+              href="/register"
+              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+            >
+              <div className="w-16 h-16 bg-linear-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -220,11 +226,14 @@ export default function HomePage() {
               <p className="text-white/70">
                 Build your audience and engage with readers
               </p>
-            </div>
+            </Link>
 
             {/* Feature 3 */}
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Link
+              href="/blogs"
+              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+            >
+              <div className="w-16 h-16 bg-linear-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
@@ -233,7 +242,7 @@ export default function HomePage() {
               <p className="text-white/70">
                 Receive likes and comments from your community
               </p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
