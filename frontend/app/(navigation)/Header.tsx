@@ -3,45 +3,47 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  buildProfileImageUrl,
+  clearSessionCookies,
+  getSessionUser,
+  onSessionUserUpdate,
+  SessionUser,
+} from "@/lib/user-session";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [user, setUser] = useState<SessionUser | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in by checking cookies
     const checkAuth = () => {
-      const userCookie = document.cookie
-        .split("; ")
-        .find(row => row.startsWith("user="));
-      
-      if (userCookie) {
-        try {
-          const userData = JSON.parse(decodeURIComponent(userCookie.split("=")[1]));
-          setIsLoggedIn(true);
-          setUserName(userData.name || "User");
-        } catch (error) {
-          setIsLoggedIn(false);
-        }
-      } else {
-        setIsLoggedIn(false);
-      }
+      const sessionUser = getSessionUser();
+      setUser(sessionUser);
+      setIsLoggedIn(!!sessionUser);
     };
 
     checkAuth();
+
+    const cleanup = onSessionUserUpdate(checkAuth);
+    window.addEventListener("focus", checkAuth);
+
+    return () => {
+      cleanup();
+      window.removeEventListener("focus", checkAuth);
+    };
   }, [pathname]);
 
   const handleLogout = () => {
-    // Clear all auth cookies
-    document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    
+    clearSessionCookies();
+    setUser(null);
     setIsLoggedIn(false);
     router.push("/login");
   };
+
+  const profileImageUrl = buildProfileImageUrl(user?.profileImage);
+  const userInitial = user?.name?.[0]?.toUpperCase() || "U";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
@@ -68,12 +70,18 @@ export default function Header() {
                 className="h-9 w-9 inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 backdrop-blur-md hover:bg-white/20 transition-colors"
                 title="My Profile"
               >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                {profileImageUrl ? (
+                  <img
+                    src={profileImageUrl}
+                    alt={user?.name || "Profile"}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white text-sm font-semibold">{userInitial}</span>
+                )}
               </Link>
               <span className="text-sm text-white/80 hidden sm:inline">
-                Welcome, {userName}
+                Welcome, {user?.name || "User"}
               </span>
               <button
                 onClick={handleLogout}
