@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/api/axios";
+import { useToast } from "@/lib/toast";
 
 type UserRow = {
   _id: string;
@@ -22,6 +23,7 @@ type PaginationMeta = {
 };
 
 export default function AdminUsersPage() {
+  const toast = useToast();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
@@ -54,18 +56,19 @@ export default function AdminUsersPage() {
   };
 
   const handleDelete = async (userId: string, userName: string) => {
-    if (!confirm(`Are you sure you want to delete user "${userName}"?`)) return;
+    const shouldDelete = await toast.confirm(`Are you sure you want to delete user "${userName}"?`, "Delete User");
+    if (!shouldDelete) return;
 
     try {
       const res = await axiosInstance.delete(`/api/admin/users/${userId}`);
       if (res.data?.success) {
-        alert("User deleted successfully!");
+        toast.success("User deleted successfully!");
         fetchUsers();
       }
     } catch (err: unknown) {
       // @ts-expect-error - axios error shape
       const serverMsg = err?.response?.data?.message;
-      alert(serverMsg || "Failed to delete user");
+      toast.error(serverMsg || "Failed to delete user");
     }
   };
 
