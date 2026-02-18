@@ -7,6 +7,7 @@ export interface Post {
         _id: string;
         name: string;
         email: string;
+        profileImage?: string;
     };
     content: string;
     date: string;
