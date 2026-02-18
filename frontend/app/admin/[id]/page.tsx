@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/api/axios";
+import { useToast } from "@/lib/toast";
 
 type UserDTO = {
   _id: string;
@@ -18,6 +19,7 @@ export default function AdminUserByIdPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string | undefined;
+  const toast = useToast();
 
   const [user, setUser] = useState<UserDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -38,14 +40,18 @@ export default function AdminUserByIdPage() {
   };
 
   const handleDelete = async () => {
-    if (!id || !confirm("Are you sure you want to delete this user?")) return;
+    if (!id) return;
+
+    const shouldDelete = await toast.confirm("Are you sure you want to delete this user?", "Delete User");
+    if (!shouldDelete) return;
     
     setDeleting(true);
     try {
       await axiosInstance.delete(`/api/admin/users/${id}`);
+      toast.success("User deleted successfully!");
       router.push("/admin/users");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to delete user");
+      toast.error(err?.response?.data?.message || "Failed to delete user");
       setDeleting(false);
     }
   };
