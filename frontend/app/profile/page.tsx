@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { profileApi, UserProfile } from "@/lib/api/profile";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/lib/toast";
 
 export default function ProfilePage() {
     const router = useRouter();
+    const toast = useToast();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -18,10 +20,10 @@ export default function ProfilePage() {
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [editingPostContent, setEditingPostContent] = useState("");
     const [isUpdatingPost, setIsUpdatingPost] = useState(false);
-    const [postActionFeedback, setPostActionFeedback] = useState<{
-        type: "success" | "error";
-        message: string;
-    } | null>(null);
+    const [newPostContent, setNewPostContent] = useState("");
+    const [isCreatingPost, setIsCreatingPost] = useState(false);
+    const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+    const POST_PREVIEW_LENGTH = 280;
 
     const fetchProfile = async () => {
         try {
@@ -85,12 +87,12 @@ export default function ProfilePage() {
                     role: response.result.role
                 }))}; path=/; sameSite=lax`;
                 
-                alert("Profile updated successfully!");
+                toast.success("Profile updated successfully!");
             } else {
-                alert(response.message || "Failed to update profile");
+                toast.error(response.message || "Failed to update profile");
             }
         } catch (error: any) {
-            alert(error.response?.data?.message || "Error updating profile");
+            toast.error(error.response?.data?.message || "Error updating profile");
         } finally {
             setIsSaving(false);
         }
@@ -102,13 +104,13 @@ export default function ProfilePage() {
 
         // Validate file type
         if (!file.type.startsWith("image/")) {
-            alert("Please select an image file");
+            toast.error("Please select an image file");
             return;
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            alert("Image size should be less than 5MB");
+            toast.error("Image size should be less than 5MB");
             return;
         }
 
@@ -125,45 +127,71 @@ export default function ProfilePage() {
                     _id: response.result!._id,
                     role: response.result!.role
                 } : null);
-                alert("Profile image uploaded successfully!");
+                toast.success("Profile image uploaded successfully!");
             } else {
-                alert(response.message || "Failed to upload image");
+                toast.error(response.message || "Failed to upload image");
             }
         } catch (error: any) {
-            alert(error.response?.data?.message || "Error uploading image");
+            toast.error(error.response?.data?.message || "Error uploading image");
         } finally {
             setUploadingImage(false);
         }
     };
 
     const handleDeletePost = async (postId: string) => {
-        if (!confirm("Are you sure you want to delete this post?")) return;
+        const shouldDelete = await toast.confirm("Are you sure you want to delete this post?", "Delete Post");
+        if (!shouldDelete) return;
 
         try {
-            setPostActionFeedback(null);
             const response = await postApi.deletePost(postId);
             if (response.success) {
                 setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
-                setPostActionFeedback({
-                    type: "success",
-                    message: "Post deleted successfully!"
-                });
+                toast.success("Post deleted successfully!");
             } else {
-                setPostActionFeedback({
-                    type: "error",
-                    message: response.message || "Failed to delete post"
-                });
+                toast.error(response.message || "Failed to delete post");
             }
         } catch (error: any) {
-            setPostActionFeedback({
-                type: "error",
-                message: error.response?.data?.message || "Error deleting post"
-            });
+            toast.error(error.response?.data?.message || "Error deleting post");
+        }
+    };
+
+    const handleCreatePost = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const trimmedContent = newPostContent.trim();
+        if (!trimmedContent) {
+            toast.error("Post content cannot be empty");
+            return;
+        }
+
+        try {
+            setIsCreatingPost(true);
+            const response = await postApi.createPost(trimmedContent);
+
+            if (response.success && response.result) {
+                const createdPost: Post = {
+                    ...response.result,
+                    user: response.result.user || {
+                        _id: profile!._id,
+                        name: profile!.name,
+                        email: profile!.email
+                    }
+                };
+
+                setPosts((prevPosts) => [createdPost, ...prevPosts]);
+                setNewPostContent("");
+                toast.success("Post created successfully!");
+            } else {
+                toast.error(response.message || "Failed to create post");
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Error creating post");
+        } finally {
+            setIsCreatingPost(false);
         }
     };
 
     const handleStartEditPost = (post: Post) => {
-        setPostActionFeedback(null);
         setEditingPostId(post._id);
         setEditingPostContent(post.content);
     };
@@ -173,21 +201,24 @@ export default function ProfilePage() {
         setEditingPostContent("");
     };
 
+    const toggleExpandedPost = (postId: string) => {
+        setExpandedPosts((prev) => ({
+            ...prev,
+            [postId]: !prev[postId]
+        }));
+    };
+
     const handleSaveEditedPost = async () => {
         if (!editingPostId) return;
 
         const trimmedContent = editingPostContent.trim();
         if (!trimmedContent) {
-            setPostActionFeedback({
-                type: "error",
-                message: "Post content cannot be empty"
-            });
+            toast.error("Post content cannot be empty");
             return;
         }
 
         try {
             setIsUpdatingPost(true);
-            setPostActionFeedback(null);
             const response = await postApi.updatePost(editingPostId, trimmedContent);
 
             if (response.success) {
@@ -200,21 +231,12 @@ export default function ProfilePage() {
                 );
                 setEditingPostId(null);
                 setEditingPostContent("");
-                setPostActionFeedback({
-                    type: "success",
-                    message: "Post updated successfully!"
-                });
+                toast.success("Post updated successfully!");
             } else {
-                setPostActionFeedback({
-                    type: "error",
-                    message: response.message || "Failed to update post"
-                });
+                toast.error(response.message || "Failed to update post");
             }
         } catch (error: any) {
-            setPostActionFeedback({
-                type: "error",
-                message: error.response?.data?.message || "Error updating post"
-            });
+            toast.error(error.response?.data?.message || "Error updating post");
         } finally {
             setIsUpdatingPost(false);
         }
@@ -329,9 +351,9 @@ export default function ProfilePage() {
                                 </h1>
                                 <p className="text-slate-300 text-lg mb-3 flex items-center gap-2">
                                     <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    {profile.email}
+                                    {profile.name}
                                 </p>
                                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-sm font-bold rounded-full backdrop-blur-sm">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -443,6 +465,32 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
+                        {/* Create Post */}
+                        <div className="bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
+                            <h2 className="text-2xl font-bold text-white mb-4">Create Post</h2>
+                            <form onSubmit={handleCreatePost} className="space-y-4">
+                                <textarea
+                                    value={newPostContent}
+                                    onChange={(e) => setNewPostContent(e.target.value)}
+                                    rows={5}
+                                    maxLength={5000}
+                                    className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    placeholder="Write your new blog post..."
+                                    required
+                                />
+                                <div className="flex items-center justify-between gap-3">
+                                    <p className="text-sm text-slate-400">{newPostContent.length} / 5000</p>
+                                    <button
+                                        type="submit"
+                                        disabled={isCreatingPost || !newPostContent.trim()}
+                                        className="min-h-10 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        {isCreatingPost ? "Publishing..." : "Publish"}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
                         {/* My Posts */}
                         <div>
                             <h2 className="text-3xl font-extrabold text-white mb-6 flex items-center gap-3">
@@ -451,17 +499,6 @@ export default function ProfilePage() {
                                 </svg>
                                 My Blog Posts
                             </h2>
-                            {postActionFeedback && (
-                                <div
-                                    className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
-                                        postActionFeedback.type === "success"
-                                            ? "border-green-500/40 bg-green-500/10 text-green-200"
-                                            : "border-red-500/40 bg-red-500/10 text-red-200"
-                                    }`}
-                                >
-                                    {postActionFeedback.message}
-                                </div>
-                            )}
                             {posts.length === 0 ? (
                                 <div className="text-center py-16 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
                                     <svg className="w-20 h-20 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -567,7 +604,22 @@ export default function ProfilePage() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <p className="text-slate-200 leading-relaxed">{post.content}</p>
+                                                <div>
+                                                    <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">
+                                                        {expandedPosts[post._id] || post.content.length <= POST_PREVIEW_LENGTH
+                                                            ? post.content
+                                                            : `${post.content.slice(0, POST_PREVIEW_LENGTH)}...`}
+                                                    </p>
+                                                    {post.content.length > POST_PREVIEW_LENGTH && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => toggleExpandedPost(post._id)}
+                                                            className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                                        >
+                                                            {expandedPosts[post._id] ? "Show less" : "Read more"}
+                                                        </button>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     ))}
