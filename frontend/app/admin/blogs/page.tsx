@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
+import { useToast } from "@/lib/toast";
 
 export default function BlogsPage() {
+    const toast = useToast();
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -30,18 +32,22 @@ export default function BlogsPage() {
     }, []);
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this post?")) return;
+        const shouldDelete = await toast.confirm("Are you sure you want to delete this post?", "Delete Post");
+        if (!shouldDelete) return;
 
         try {
             const response = await postApi.deletePost(id);
             if (response.success) {
                 console.log("Post deleted successfully");
                 setPosts(posts.filter(post => post._id !== id));
+                toast.success("Post deleted successfully!");
             } else {
                 console.error("Failed to delete post:", response.message);
+                toast.error(response.message || "Failed to delete post");
             }
         } catch (error: any) {
             console.error("Error deleting post:", error);
+            toast.error(error.response?.data?.message || "Error deleting post");
         }
     };
 
