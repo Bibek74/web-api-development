@@ -114,7 +114,8 @@ export class AuthController {
                         _id: (user._id as any).toString(),
                         name: user.name,
                         email: user.email,
-                        role: user.role
+                        role: user.role,
+                        profileImage: user.profileImage || ""
                     }
                 });
             } else {
