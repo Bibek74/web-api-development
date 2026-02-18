@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/lib/toast";
 
 export default function AdminLayout({
   children,
@@ -9,9 +10,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const toast = useToast();
 
-  const handleLogout = () => {
-    const shouldLogout = window.confirm("Are you sure you want to log out?");
+  const handleLogout = async () => {
+    const shouldLogout = await toast.confirm("Are you sure you want to log out?", "Logout");
     if (!shouldLogout) return;
 
     document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
