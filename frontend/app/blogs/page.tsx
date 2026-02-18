@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/lib/toast";
 
 export default function BlogsPage() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -12,7 +13,10 @@ export default function BlogsPage() {
     const [newPostContent, setNewPostContent] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
     const router = useRouter();
+    const toast = useToast();
+    const POST_PREVIEW_LENGTH = 280;
 
     // Check if user is authenticated
     useEffect(() => {
@@ -75,7 +79,7 @@ export default function BlogsPage() {
         e.preventDefault();
         
         if (!newPostContent.trim()) {
-            alert("Please enter some content");
+            toast.error("Please enter some content");
             return;
         }
 
@@ -86,13 +90,14 @@ export default function BlogsPage() {
                 console.log("Post created successfully");
                 setNewPostContent("");
                 setShowCreateForm(false);
+                toast.success("Post created successfully!");
                 // Refresh posts to show the new post
                 fetchPosts();
             } else {
-                alert(response.message || "Failed to create post");
+                toast.error(response.message || "Failed to create post");
             }
         } catch (error: any) {
-            alert(error.response?.data?.message || "Error creating post");
+            toast.error(error.response?.data?.message || "Error creating post");
             console.error("Error creating post:", error);
         } finally {
             setIsSubmitting(false);
@@ -108,6 +113,13 @@ export default function BlogsPage() {
             hour: "2-digit",
             minute: "2-digit"
         });
+    };
+
+    const toggleExpandedPost = (postId: string) => {
+        setExpandedPosts((prev) => ({
+            ...prev,
+            [postId]: !prev[postId]
+        }));
     };
 
     if (loading) {
@@ -310,6 +322,15 @@ export default function BlogsPage() {
                                 key={post._id}
                                 className="bg-slate-900/75 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 p-6"
                             >
+                                {(() => {
+                                    const isExpanded = !!expandedPosts[post._id];
+                                    const isLongPost = post.content.length > POST_PREVIEW_LENGTH;
+                                    const displayedContent = isExpanded || !isLongPost
+                                        ? post.content
+                                        : `${post.content.slice(0, POST_PREVIEW_LENGTH)}...`;
+
+                                    return (
+                                        <>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
@@ -328,8 +349,17 @@ export default function BlogsPage() {
 
                                 <div className="mb-4">
                                     <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base">
-                                        {post.content}
+                                        {displayedContent}
                                     </p>
+                                    {isLongPost && (
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleExpandedPost(post._id)}
+                                            className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                        >
+                                            {isExpanded ? "Show less" : "Read more"}
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
@@ -365,6 +395,9 @@ export default function BlogsPage() {
                                         </span>
                                     )}
                                 </div>
+                                        </>
+                                    );
+                                })()}
                             </article>
                         ))}
                     </div>
