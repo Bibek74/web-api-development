@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
 import { useToast } from "@/lib/toast";
+import { buildProfileImageUrl } from "@/lib/user-session";
 
 export default function BlogsPage() {
     const toast = useToast();
@@ -139,8 +140,16 @@ export default function BlogsPage() {
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                                        {post.user?.name?.[0]?.toUpperCase() || "U"}
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                                        {post.user?.profileImage ? (
+                                            <img
+                                                src={buildProfileImageUrl(post.user.profileImage)}
+                                                alt={post.user?.name || "User"}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                                        )}
                                     </div>
                                     <div>
                                         <h3 className="font-semibold text-gray-900">
