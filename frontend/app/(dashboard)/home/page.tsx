@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
+import { buildProfileImageUrl } from "@/lib/user-session";
 
 export default function HomePage() {
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
@@ -147,8 +148,16 @@ export default function HomePage() {
                   <div className="p-6">
                     {/* Author Info */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
-                        {post.user?.name?.[0]?.toUpperCase() || "U"}
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                        {post.user?.profileImage ? (
+                          <img
+                            src={buildProfileImageUrl(post.user.profileImage)}
+                            alt={post.user?.name || "User"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                        )}
                       </div>
                       <div>
                         <p className="font-semibold text-white">
