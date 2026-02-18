@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Header from "./(navigation)/Header";
+import Footer from "./(navigation)/Footer";
 
 export default function ClientShell({
   children,
@@ -11,9 +12,15 @@ export default function ClientShell({
   const pathname = usePathname();
 
   const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs";
+  const hideFooter = pathname.startsWith("/admin");
 
   if (hideHeader) {
-    return <>{children}</>;
+    return (
+      <>
+        {children}
+        {!hideFooter && <Footer />}
+      </>
+    );
   }
 
   return (
@@ -21,6 +28,7 @@ export default function ClientShell({
       <Header />
       {/* Header is fixed, so push content down */}
       <main className="pt-0">{children}</main>
+      {!hideFooter && <Footer />}
     </>
   );
 }
