@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
+import { clearSessionCookies } from "@/lib/user-session";
 
 export default function AdminLayout({
   children,
@@ -16,9 +17,7 @@ export default function AdminLayout({
     const shouldLogout = await toast.confirm("Are you sure you want to log out?", "Logout");
     if (!shouldLogout) return;
 
-    document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    document.cookie = "role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    clearSessionCookies();
     router.push("/login");
   };
 
