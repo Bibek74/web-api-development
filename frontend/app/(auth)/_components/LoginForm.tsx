@@ -7,9 +7,11 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { LoginData, loginSchema } from "../schema";
 import { handleLogin } from "@/lib/actions/auth-actions";
+import { useToast } from "@/lib/toast";
 
 export default function LoginForm() {
   const router = useRouter();
+  const toast = useToast();
 
   const {
     register,
@@ -27,6 +29,7 @@ export default function LoginForm() {
       const res = await handleLogin(values);
 
       if (res.success) {
+        toast.success("Login successful!");
         const role = res.data?.role;
 
         if (role === "admin") {
@@ -35,7 +38,7 @@ export default function LoginForm() {
           router.replace("/home"); 
         }
       } else {
-        alert(res.message);
+        toast.error(res.message);
       }
     });
   };
