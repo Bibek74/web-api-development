@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
+import { buildProfileImageUrl } from "@/lib/user-session";
 
 export default function BlogsPage() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -333,8 +334,16 @@ export default function BlogsPage() {
                                         <>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                                            {post.user?.name?.[0]?.toUpperCase() || "U"}
+                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                            {post.user?.profileImage ? (
+                                                <img
+                                                    src={buildProfileImageUrl(post.user.profileImage)}
+                                                    alt={post.user?.name || "User"}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                                            )}
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-white text-lg">
