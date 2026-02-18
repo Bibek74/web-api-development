@@ -2,19 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { profileApi, UserProfile } from "@/lib/api/profile";
+import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 export default function ProfilePage() {
     const router = useRouter();
     const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [authError, setAuthError] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editData, setEditData] = useState({ name: "", email: "" });
     const [isSaving, setIsSaving] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
+    const [editingPostId, setEditingPostId] = useState<string | null>(null);
+    const [editingPostContent, setEditingPostContent] = useState("");
+    const [isUpdatingPost, setIsUpdatingPost] = useState(false);
+    const [postActionFeedback, setPostActionFeedback] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>(null);
 
     const fetchProfile = async () => {
         try {
@@ -126,6 +133,90 @@ export default function ProfilePage() {
             alert(error.response?.data?.message || "Error uploading image");
         } finally {
             setUploadingImage(false);
+        }
+    };
+
+    const handleDeletePost = async (postId: string) => {
+        if (!confirm("Are you sure you want to delete this post?")) return;
+
+        try {
+            setPostActionFeedback(null);
+            const response = await postApi.deletePost(postId);
+            if (response.success) {
+                setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
+                setPostActionFeedback({
+                    type: "success",
+                    message: "Post deleted successfully!"
+                });
+            } else {
+                setPostActionFeedback({
+                    type: "error",
+                    message: response.message || "Failed to delete post"
+                });
+            }
+        } catch (error: any) {
+            setPostActionFeedback({
+                type: "error",
+                message: error.response?.data?.message || "Error deleting post"
+            });
+        }
+    };
+
+    const handleStartEditPost = (post: Post) => {
+        setPostActionFeedback(null);
+        setEditingPostId(post._id);
+        setEditingPostContent(post.content);
+    };
+
+    const handleCancelEditPost = () => {
+        setEditingPostId(null);
+        setEditingPostContent("");
+    };
+
+    const handleSaveEditedPost = async () => {
+        if (!editingPostId) return;
+
+        const trimmedContent = editingPostContent.trim();
+        if (!trimmedContent) {
+            setPostActionFeedback({
+                type: "error",
+                message: "Post content cannot be empty"
+            });
+            return;
+        }
+
+        try {
+            setIsUpdatingPost(true);
+            setPostActionFeedback(null);
+            const response = await postApi.updatePost(editingPostId, trimmedContent);
+
+            if (response.success) {
+                setPosts((prevPosts) =>
+                    prevPosts.map((post) =>
+                        post._id === editingPostId
+                            ? { ...post, content: trimmedContent }
+                            : post
+                    )
+                );
+                setEditingPostId(null);
+                setEditingPostContent("");
+                setPostActionFeedback({
+                    type: "success",
+                    message: "Post updated successfully!"
+                });
+            } else {
+                setPostActionFeedback({
+                    type: "error",
+                    message: response.message || "Failed to update post"
+                });
+            }
+        } catch (error: any) {
+            setPostActionFeedback({
+                type: "error",
+                message: error.response?.data?.message || "Error updating post"
+            });
+        } finally {
+            setIsUpdatingPost(false);
         }
     };
 
@@ -360,6 +451,17 @@ export default function ProfilePage() {
                                 </svg>
                                 My Blog Posts
                             </h2>
+                            {postActionFeedback && (
+                                <div
+                                    className={`mb-4 rounded-lg border px-4 py-3 text-sm ${
+                                        postActionFeedback.type === "success"
+                                            ? "border-green-500/40 bg-green-500/10 text-green-200"
+                                            : "border-red-500/40 bg-red-500/10 text-red-200"
+                                    }`}
+                                >
+                                    {postActionFeedback.message}
+                                </div>
+                            )}
                             {posts.length === 0 ? (
                                 <div className="text-center py-16 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
                                     <svg className="w-20 h-20 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -375,7 +477,7 @@ export default function ProfilePage() {
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {posts.map((post: any) => (
+                                    {posts.map((post) => (
                                         <div key={post._id} className="group relative bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 hover:bg-slate-700/60 transition-all border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20">
                                             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                             <div className="relative flex justify-between items-start mb-4">
@@ -389,14 +491,84 @@ export default function ProfilePage() {
                                                         day: "numeric"
                                                     })}
                                                 </p>
-                                                <span className="flex items-center gap-2 px-3 py-1 bg-pink-500/20 border border-pink-500/30 text-pink-300 text-sm font-bold rounded-full backdrop-blur-sm">
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                    </svg>
-                                                    {post.likes?.length || 0}
-                                                </span>
+                                                <div className="flex items-center gap-3">
+                                                    <span className="flex items-center gap-2 px-3 py-1 bg-pink-500/20 border border-pink-500/30 text-pink-300 text-sm font-bold rounded-full backdrop-blur-sm">
+                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                        </svg>
+                                                        {post.likes?.length || 0}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleStartEditPost(post)}
+                                                        className="min-h-10 min-w-10 text-blue-300 hover:text-blue-200 transition-colors p-2 hover:bg-blue-500/20 rounded"
+                                                        title="Edit post"
+                                                    >
+                                                        <svg
+                                                            className="w-5 h-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeletePost(post._id)}
+                                                        className="min-h-10 min-w-10 text-red-300 hover:text-red-200 transition-colors p-2 hover:bg-red-500/20 rounded"
+                                                        title="Delete post"
+                                                    >
+                                                        <svg
+                                                            className="w-5 h-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                            />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <p className="text-slate-200 leading-relaxed">{post.content}</p>
+                                            {editingPostId === post._id ? (
+                                                <div className="space-y-3">
+                                                    <textarea
+                                                        value={editingPostContent}
+                                                        onChange={(e) => setEditingPostContent(e.target.value)}
+                                                        rows={5}
+                                                        maxLength={5000}
+                                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                                    />
+                                                    <div className="flex items-center justify-end gap-3">
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleCancelEditPost}
+                                                            disabled={isUpdatingPost}
+                                                            className="min-h-10 px-4 py-2 border border-white/20 text-slate-200 rounded-lg hover:bg-white/10 disabled:opacity-60 transition-colors"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleSaveEditedPost}
+                                                            disabled={isUpdatingPost || !editingPostContent.trim()}
+                                                            className="min-h-10 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+                                                        >
+                                                            {isUpdatingPost ? "Saving..." : "Save"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-slate-200 leading-relaxed">{post.content}</p>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

@@ -128,9 +128,26 @@ export class PostController {
         try {
             // Validate request body
             const validatedData = updatePostSchema.parse(req.body);
+
+            const existingPost = await postModel.findOne({ _id: req.params.id });
+            if (!existingPost) {
+                res.status(404).send({
+                    message: "Post not found",
+                    success: false
+                });
+                return;
+            }
+
+            if (existingPost.user.toString() !== req.user!.userId) {
+                res.status(403).send({
+                    message: "You can only update your own posts",
+                    success: false
+                });
+                return;
+            }
             
             const updatedPost = await postModel.findOneAndUpdate(
-                { _id: req.params.id },
+                { _id: req.params.id, user: req.user!.userId },
                 { content: validatedData.content }
             );
             if (!updatedPost) {
@@ -183,23 +200,34 @@ export class PostController {
     // Delete Post By post id
     deletePostById = async (req: Request, res: Response): Promise<void> => {
         try {
-            const post = await postModel.findOneAndDelete({ _id: req.params.id });
+            const post = await postModel.findOne({ _id: req.params.id });
             if (!post) {
-                res.send({
-                    message: "Something went wrong!",
+                res.status(404).send({
+                    message: "Post not found",
                     success: false
                 });
-            } else {
-                // Remove the deleted post ID from the user's posts array
-                await userModel.findOneAndUpdate(
-                    { _id: req.user!.userId },
-                    { $pull: { posts: req.params.id } }
-                );
-                res.send({
-                    message: "Post deleted successfully!",
-                    success: true
-                });
+                return;
             }
+
+            if (post.user.toString() !== req.user!.userId) {
+                res.status(403).send({
+                    message: "You can only delete your own posts",
+                    success: false
+                });
+                return;
+            }
+
+            await postModel.findOneAndDelete({ _id: req.params.id, user: req.user!.userId });
+
+            await userModel.findOneAndUpdate(
+                { _id: req.user!.userId },
+                { $pull: { posts: req.params.id } }
+            );
+
+            res.send({
+                message: "Post deleted successfully!",
+                success: true
+            });
         } catch (err) {
             res.send({
                 message: (err as Error).message ?? "Unknown error",
