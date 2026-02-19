@@ -20,6 +20,7 @@ export const API = {
         UPDATE: "/api/profile/update",
         DELETE: "/api/profile/delete",
         UPLOAD_IMAGE: "/api/profile/upload-image",
-        VISIT: "/api/profile/visit"
+        VISIT: "/api/profile/visit",
+        VISIT_BY_ID: (id: string) => `/api/profile/visit/${id}`
     }
 }
