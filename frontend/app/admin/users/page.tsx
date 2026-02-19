@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/api/axios";
 import { useToast } from "@/lib/toast";
+import { buildProfileImageUrl } from "@/lib/user-session";
 
 type UserRow = {
   _id: string;
   name?: string;
   email?: string;
   role?: "user" | "admin";
+  profileImage?: string;
+  postsCount?: number;
   createdAt?: string;
 };
 
@@ -90,7 +93,7 @@ export default function AdminUsersPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="bg-slate-800/50 backdrop-blur-xl rounded-lg shadow-lg p-6 border border-white/10">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-start justify-between gap-4">
           <h1 className="text-3xl font-bold text-white">Admin Users</h1>
 
           <div className="flex gap-3">
@@ -146,6 +149,7 @@ export default function AdminUsersPage() {
                   <th className="text-left py-3 px-4 font-semibold text-slate-300">Name</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-300">Email</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-300">Role</th>
+                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Blogs</th>
                   <th className="text-left py-3 px-4 font-semibold text-slate-300">ID</th>
                   <th className="text-right py-3 px-4 font-semibold text-slate-300">Actions</th>
                 </tr>
@@ -154,7 +158,7 @@ export default function AdminUsersPage() {
               <tbody>
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-slate-400">
+                    <td colSpan={6} className="text-center py-8 text-slate-400">
                       No users found
                     </td>
                   </tr>
@@ -162,7 +166,20 @@ export default function AdminUsersPage() {
                   filteredUsers.map((u) => (
                     <tr key={u._id} className="border-b border-white/10 hover:bg-slate-700/30">
                       <td className="py-3 px-4">
-                        <div className="font-medium text-white">{u.name ?? "-"}</div>
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
+                            {u.profileImage ? (
+                              <img
+                                src={buildProfileImageUrl(u.profileImage)}
+                                alt={u.name || "User"}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <span>{u.name?.[0]?.toUpperCase() || "U"}</span>
+                            )}
+                          </div>
+                          <div className="font-medium text-white">{u.name ?? "-"}</div>
+                        </div>
                       </td>
                       <td className="py-3 px-4 text-slate-300">{u.email ?? "-"}</td>
                       <td className="py-3 px-4">
@@ -175,6 +192,9 @@ export default function AdminUsersPage() {
                         >
                           {u.role ?? "-"}
                         </span>
+                      </td>
+                      <td className="py-3 px-4 text-slate-200 font-semibold">
+                        {u.postsCount ?? 0}
                       </td>
                       <td className="py-3 px-4 text-slate-400 text-sm font-mono">
                         {u._id.substring(0, 8)}...
