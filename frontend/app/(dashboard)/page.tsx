@@ -13,7 +13,7 @@ export default function Dashboard() {
       />
 
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-zinc-900/85 to-black/90" />
+      <div className="absolute inset-0 bg-linear-to-br from-black/90 via-zinc-900/85 to-black/90" />
 
       {/* Content */}
       <div className="relative z-10 mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 text-center">
