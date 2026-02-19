@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { profileApi, UserProfile } from "@/lib/api/profile";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
@@ -21,9 +21,11 @@ export default function ProfilePage() {
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [editingPostContent, setEditingPostContent] = useState("");
     const [isUpdatingPost, setIsUpdatingPost] = useState(false);
+    const [newPostTitle, setNewPostTitle] = useState("");
     const [newPostContent, setNewPostContent] = useState("");
     const [isCreatingPost, setIsCreatingPost] = useState(false);
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+    const [postSearchTerm, setPostSearchTerm] = useState("");
     const POST_PREVIEW_LENGTH = 280;
 
     const fetchProfile = async () => {
@@ -32,6 +34,10 @@ export default function ProfilePage() {
             setAuthError(false);
             const response = await profileApi.getMyProfile();
             if (response.success && response.result) {
+                const sortedPosts = [...(response.posts || [])].sort(
+                    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+                );
+
                 // Use the profile data directly from backend
                 const userData: UserProfile = {
                     _id: response.result._id,
@@ -39,11 +45,11 @@ export default function ProfilePage() {
                     email: response.result.email,
                     role: response.result.role,
                     profileImage: response.result.profileImage || "",
-                    posts: response.posts || []
+                    posts: sortedPosts
                 };
                 
                 setProfile(userData);
-                setPosts(response.posts || []);
+                setPosts(sortedPosts);
                 setEditData({ name: userData.name, email: userData.email });
                 setSessionUser({
                     _id: userData._id,
@@ -172,7 +178,12 @@ export default function ProfilePage() {
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const trimmedTitle = newPostTitle.trim();
         const trimmedContent = newPostContent.trim();
+        if (!trimmedTitle) {
+            toast.error("Post heading cannot be empty");
+            return;
+        }
         if (!trimmedContent) {
             toast.error("Post content cannot be empty");
             return;
@@ -180,7 +191,7 @@ export default function ProfilePage() {
 
         try {
             setIsCreatingPost(true);
-            const response = await postApi.createPost(trimmedContent);
+            const response = await postApi.createPost(trimmedTitle, trimmedContent);
 
             if (response.success && response.result) {
                 const createdPost: Post = {
@@ -193,6 +204,7 @@ export default function ProfilePage() {
                 };
 
                 setPosts((prevPosts) => [createdPost, ...prevPosts]);
+                setNewPostTitle("");
                 setNewPostContent("");
                 toast.success("Post created successfully!");
             } else {
@@ -221,6 +233,17 @@ export default function ProfilePage() {
             [postId]: !prev[postId]
         }));
     };
+
+    const filteredProfilePosts = useMemo(() => {
+        const query = postSearchTerm.trim().toLowerCase();
+        if (!query) return posts;
+
+        return posts.filter((post) => {
+            const title = (post.title || "").toLowerCase();
+            const content = (post.content || "").toLowerCase();
+            return title.includes(query) || content.includes(query);
+        });
+    }, [posts, postSearchTerm]);
 
     const handleSaveEditedPost = async () => {
         if (!editingPostId) return;
@@ -258,9 +281,9 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
                 <div className="container mx-auto px-4 py-8 pt-20">
-                    <div className="flex items-center justify-center min-h-[400px]">
+                    <div className="flex items-center justify-center min-h-100">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto"></div>
                             <p className="mt-4 text-slate-300 text-lg">Loading your profile...</p>
@@ -273,7 +296,7 @@ export default function ProfilePage() {
 
     if (authError) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
                 <div className="container mx-auto px-4 py-8 pt-20 max-w-2xl">
                     <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 rounded-2xl p-8 text-center">
                         <svg className="w-20 h-20 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,7 +306,7 @@ export default function ProfilePage() {
                         <p className="text-slate-300 mb-6 text-lg">You need to be logged in to view your profile.</p>
                         <button
                             onClick={() => router.push('/login')}
-                            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
+                            className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
                         >
                             Go to Login
                         </button>
@@ -296,7 +319,7 @@ export default function ProfilePage() {
     if (!profile) return null;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
             {/* Decorative background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -307,9 +330,9 @@ export default function ProfilePage() {
             <div className="relative container mx-auto px-4 py-8 pt-20 max-w-5xl">
                 <div className="bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/10">
                     {/* Header Section with Bold Gradient */}
-                    <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 h-48 overflow-hidden">
+                    <div className="relative bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 h-48 overflow-hidden">
                         <div className="absolute inset-0 bg-black/20"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent"></div>
+                        <div className="absolute inset-0 bg-linear-to-t from-slate-900/50 to-transparent"></div>
                         {/* Animated pattern overlay */}
                         <div className="absolute inset-0 opacity-20">
                             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
@@ -321,7 +344,7 @@ export default function ProfilePage() {
                         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-20 mb-8">
                             {/* Profile Image with Glow Effect */}
                             <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
+                                <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-pink-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
                                 <div className="relative w-40 h-40 rounded-full border-4 border-slate-800 bg-slate-800 overflow-hidden shadow-2xl ring-4 ring-purple-500/30">
                                     {profile.profileImage ? (
                                         <img
@@ -330,14 +353,14 @@ export default function ProfilePage() {
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 flex items-center justify-center text-white text-5xl font-bold">
+                                        <div className="w-full h-full bg-linear-to-br from-purple-600 via-pink-600 to-blue-600 flex items-center justify-center text-white text-5xl font-bold">
                                             {profile.name[0]?.toUpperCase()}
                                         </div>
                                     )}
                                 </div>
                                 <label
                                     htmlFor="profile-image"
-                                    className="absolute bottom-2 right-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 rounded-full cursor-pointer hover:from-purple-700 hover:to-pink-700 shadow-xl hover:scale-110 transition-transform"
+                                    className="absolute bottom-2 right-2 bg-linear-to-r from-purple-600 to-pink-600 text-white p-3 rounded-full cursor-pointer hover:from-purple-700 hover:to-pink-700 shadow-xl hover:scale-110 transition-transform"
                                 >
                                     {uploadingImage ? (
                                         <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full"></div>
@@ -360,7 +383,7 @@ export default function ProfilePage() {
 
                             {/* Name and Role */}
                             <div className="flex-1">
-                                <h1 className="text-4xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                                <h1 className="text-4xl font-extrabold bg-linear-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
                                     {profile.name}
                                 </h1>
                                 <p className="text-slate-300 text-lg mb-3 flex items-center gap-2">
@@ -369,7 +392,7 @@ export default function ProfilePage() {
                                     </svg>
                                     {profile.name}
                                 </p>
-                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-sm font-bold rounded-full backdrop-blur-sm">
+                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-sm font-bold rounded-full backdrop-blur-sm">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
@@ -381,7 +404,7 @@ export default function ProfilePage() {
                             {!isEditMode && (
                                 <button
                                     onClick={() => setIsEditMode(true)}
-                                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-blue-500/50 font-semibold"
+                                    className="px-6 py-3 bg-linear-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-blue-500/50 font-semibold"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -426,7 +449,7 @@ export default function ProfilePage() {
                                         <button
                                             type="submit"
                                             disabled={isSaving}
-                                            className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 transition-all font-semibold shadow-lg"
+                                            className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 transition-all font-semibold shadow-lg"
                                         >
                                             {isSaving ? "Saving..." : "Save Changes"}
                                         </button>
@@ -447,32 +470,32 @@ export default function ProfilePage() {
 
                         {/* Stats with Bold Colors */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                            <div className="relative bg-gradient-to-br from-purple-600/20 to-purple-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-purple-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl"></div>
+                            <div className="relative bg-linear-to-br from-purple-600/20 to-purple-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-purple-500/30 hover:scale-105 transition-transform">
+                                <div className="absolute inset-0 bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl"></div>
                                 <svg className="w-12 h-12 text-purple-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <div className="relative text-5xl font-extrabold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                                     {posts.length}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Blog Posts</div>
                             </div>
-                            <div className="relative bg-gradient-to-br from-pink-600/20 to-pink-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-pink-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-transparent rounded-2xl"></div>
+                            <div className="relative bg-linear-to-br from-pink-600/20 to-pink-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-pink-500/30 hover:scale-105 transition-transform">
+                                <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-transparent rounded-2xl"></div>
                                 <svg className="w-12 h-12 text-pink-400 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                <div className="relative text-5xl font-extrabold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
+                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
                                     {posts.reduce((acc, post) => acc + (post.likes?.length || 0), 0)}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Total Likes</div>
                             </div>
-                            <div className="relative bg-gradient-to-br from-blue-600/20 to-cyan-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-blue-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-2xl"></div>
+                            <div className="relative bg-linear-to-br from-blue-600/20 to-cyan-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-blue-500/30 hover:scale-105 transition-transform">
+                                <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 to-transparent rounded-2xl"></div>
                                 <svg className="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
-                                <div className="relative text-3xl font-extrabold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                                <div className="relative text-3xl font-extrabold bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                                     {profile.role === "admin" ? "ADMIN" : "USER"}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Account Type</div>
@@ -483,6 +506,18 @@ export default function ProfilePage() {
                         <div className="bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
                             <h2 className="text-2xl font-bold text-white mb-4">Create Post</h2>
                             <form onSubmit={handleCreatePost} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">Heading</label>
+                                    <input
+                                        type="text"
+                                        value={newPostTitle}
+                                        onChange={(e) => setNewPostTitle(e.target.value)}
+                                        maxLength={120}
+                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Write a heading..."
+                                        required
+                                    />
+                                </div>
                                 <textarea
                                     value={newPostContent}
                                     onChange={(e) => setNewPostContent(e.target.value)}
@@ -493,10 +528,10 @@ export default function ProfilePage() {
                                     required
                                 />
                                 <div className="flex items-center justify-between gap-3">
-                                    <p className="text-sm text-slate-400">{newPostContent.length} / 5000</p>
+                                    <p className="text-sm text-slate-400">{newPostTitle.length} / 120 · {newPostContent.length} / 5000</p>
                                     <button
                                         type="submit"
-                                        disabled={isCreatingPost || !newPostContent.trim()}
+                                        disabled={isCreatingPost || !newPostTitle.trim() || !newPostContent.trim()}
                                         className="min-h-10 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
                                     >
                                         {isCreatingPost ? "Publishing..." : "Publish"}
@@ -513,6 +548,17 @@ export default function ProfilePage() {
                                 </svg>
                                 My Blog Posts
                             </h2>
+
+                            <div className="mb-5">
+                                <input
+                                    type="text"
+                                    value={postSearchTerm}
+                                    onChange={(e) => setPostSearchTerm(e.target.value)}
+                                    placeholder="Search your blogs by heading or content..."
+                                    className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
                             {posts.length === 0 ? (
                                 <div className="text-center py-16 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
                                     <svg className="w-20 h-20 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -521,16 +567,27 @@ export default function ProfilePage() {
                                     <p className="text-slate-300 text-lg mb-6">You haven't posted anything yet.</p>
                                     <button
                                         onClick={() => router.push('/blogs')}
-                                        className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
+                                        className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
                                     >
                                         Create Your First Post
                                     </button>
                                 </div>
+                            ) : filteredProfilePosts.length === 0 ? (
+                                <div className="text-center py-12 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
+                                    <p className="text-slate-300 text-lg">No matching blogs found.</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPostSearchTerm("")}
+                                        className="mt-4 min-h-10 px-4 py-2 rounded-lg border border-white/20 text-slate-200 hover:bg-white/10 transition-colors"
+                                    >
+                                        Clear Search
+                                    </button>
+                                </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {posts.map((post) => (
+                                    {filteredProfilePosts.map((post) => (
                                         <div key={post._id} className="group relative bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 hover:bg-slate-700/60 transition-all border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                             <div className="relative flex justify-between items-start mb-4">
                                                 <p className="text-sm text-slate-400 flex items-center gap-2 font-medium">
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -619,6 +676,9 @@ export default function ProfilePage() {
                                                 </div>
                                             ) : (
                                                 <div>
+                                                    <h3 className="text-xl font-semibold text-white mb-3">
+                                                        {post.title || "Untitled"}
+                                                    </h3>
                                                     <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">
                                                         {expandedPosts[post._id] || post.content.length <= POST_PREVIEW_LENGTH
                                                             ? post.content
