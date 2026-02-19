@@ -20,6 +20,7 @@ export class PostController {
             }
             const createdPost = await postModel.create({
                 user: user._id,
+                title: validatedData.title,
                 content: validatedData.content
             });
             user.posts.push(createdPost._id as any);
