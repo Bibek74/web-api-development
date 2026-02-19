@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import axiosInstance from "@/lib/api/axios";
 
@@ -9,7 +9,7 @@ type UserDTO = {
   name?: string;
   email?: string;
   role?: "user" | "admin";
-  image?: string;
+  profileImage?: string;
   createdAt?: string;
 };
 
@@ -30,6 +30,17 @@ export default function AdminUserEditPage() {
   const [password, setPassword] = useState("");
   const [image, setImage] = useState<File | null>(null);
 
+  const getErrorMessage = (err: unknown, fallback: string) => {
+    if (typeof err === "object" && err !== null) {
+      const maybeResponse = err as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
+      return maybeResponse.response?.data?.message || maybeResponse.message || fallback;
+    }
+    return fallback;
+  };
+
   const hasChanges = useMemo(() => {
     if (!user) return false;
     return (
@@ -41,7 +52,7 @@ export default function AdminUserEditPage() {
     );
   }, [user, name, email, role, password, image]);
 
-  const fetchUser = async (userId: string) => {
+  const fetchUser = useCallback(async (userId: string) => {
     setError("");
     setLoading(true);
     try {
@@ -52,21 +63,20 @@ export default function AdminUserEditPage() {
       setUser(u);
       setName(u.name ?? "");
       setEmail(u.email ?? "");
-      setRole((u.role as any) ?? "user");
+      setRole(u.role ?? "user");
       setPassword("");
       setImage(null);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || "Failed to load user");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to load user"));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (!id) return; // wait until params are available
     fetchUser(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, fetchUser]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,7 +102,7 @@ export default function AdminUserEditPage() {
         setUser(updated);
         setName(updated.name ?? "");
         setEmail(updated.email ?? "");
-        setRole((updated.role as any) ?? "user");
+        setRole(updated.role ?? "user");
         setPassword("");
         setImage(null);
       } else {
@@ -101,8 +111,8 @@ export default function AdminUserEditPage() {
 
       router.push(`/admin/${id}`);
       router.refresh();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || "Failed to update user");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Failed to update user"));
     } finally {
       setSaving(false);
     }
