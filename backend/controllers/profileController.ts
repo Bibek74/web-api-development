@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import userModel from "../models/user.js";
+import postModel from "../models/post.js";
 import * as bcrypt from "bcrypt";
 import { updateProfileSchema, deleteProfileSchema } from "../validators/validation.js";
 
@@ -7,7 +8,10 @@ export class ProfileController {
     // GET My Profile 
     getMyProfile = async (req: Request, res: Response): Promise<void> => {
         try {
-            const user = await userModel.findOne({ _id: req.user!.userId }).populate("posts");
+            const user = await userModel.findOne({ _id: req.user!.userId }).populate({
+                path: "posts",
+                options: { sort: { date: -1 } }
+            });
             if (!user) {
                 res.send({
                     message: "User not found",
@@ -126,6 +130,55 @@ export class ProfileController {
             });
         } catch (err) {
             res.send({
+                message: (err as Error).message ?? "Unknown error",
+                success: false
+            });
+        }
+    };
+
+    // Visit Profile By Id (Public)
+    getPublicProfileById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const userId = req.params.id;
+
+            if (!userId) {
+                res.status(400).send({
+                    message: "User id is required",
+                    success: false
+                });
+                return;
+            }
+
+            const profile = await userModel
+                .findById(userId)
+                .select("_id name role profileImage");
+
+            if (!profile) {
+                res.status(404).send({
+                    message: "Profile not found",
+                    success: false
+                });
+                return;
+            }
+
+            const posts = await postModel
+                .find({ user: userId })
+                .populate("user", "_id name email profileImage")
+                .sort({ date: -1 });
+
+            res.send({
+                message: "Profile fetched successfully",
+                result: {
+                    _id: profile._id.toString(),
+                    name: profile.name,
+                    role: profile.role,
+                    profileImage: profile.profileImage || ""
+                },
+                posts,
+                success: true
+            });
+        } catch (err) {
+            res.status(400).send({
                 message: (err as Error).message ?? "Unknown error",
                 success: false
             });
