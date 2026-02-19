@@ -1,20 +1,85 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
 import { buildProfileImageUrl } from "@/lib/user-session";
+
+const BLOG_TYPE_KEYWORDS: Record<string, string[]> = {
+    Technology: ["tech", "ai", "software", "coding", "programming", "javascript", "typescript", "react", "node", "backend", "frontend", "database", "api"],
+    Travel: ["travel", "trip", "journey", "destination", "adventure", "tour", "flight", "vacation", "itinerary"],
+    Food: ["food", "recipe", "cooking", "kitchen", "meal", "restaurant", "dish", "ingredients", "chef"],
+    Lifestyle: ["lifestyle", "daily", "routine", "wellness", "mindset", "habits", "selfcare", "fitness", "health"],
+    Business: ["business", "startup", "market", "finance", "career", "productivity", "strategy", "sales", "management"],
+};
+
+const BLOG_TYPE_HASHTAGS: Record<string, string[]> = {
+    Technology: ["technology", "tech", "ai", "coding", "programming"],
+    Travel: ["travel", "trip", "adventure", "journey"],
+    Food: ["food", "recipe", "cooking"],
+    Lifestyle: ["lifestyle", "wellness", "mindset", "fitness"],
+    Business: ["business", "startup", "finance", "career"]
+};
+
+const STOP_WORDS = new Set([
+    "the", "and", "for", "with", "that", "this", "from", "have", "your", "about", "into", "there", "their", "what", "when", "where", "would", "could", "should", "will", "you", "are", "was", "were", "has", "had", "not", "but", "all", "any", "can", "our", "out", "how", "why", "who", "its", "they", "them"
+]);
+
+const getBlogType = (content: string) => {
+    const lowerContent = content.toLowerCase();
+
+    const hashtags = (lowerContent.match(/#[a-z0-9_]+/g) || []).map((tag) => tag.slice(1));
+    for (const [type, tags] of Object.entries(BLOG_TYPE_HASHTAGS)) {
+        if (tags.some((tag) => hashtags.includes(tag))) {
+            return type;
+        }
+    }
+
+    const tokens = lowerContent
+        .split(/[^a-z0-9]+/)
+        .filter((word) => word.length > 2);
+
+    const scores = new Map<string, number>();
+    for (const [type, keywords] of Object.entries(BLOG_TYPE_KEYWORDS)) {
+        const score = keywords.reduce((count, keyword) => {
+            return count + tokens.filter((token) => token === keyword).length;
+        }, 0);
+        scores.set(type, score);
+    }
+
+    let detectedType = "General";
+    let maxScore = 0;
+
+    for (const [type, score] of scores.entries()) {
+        if (score > maxScore) {
+            maxScore = score;
+            detectedType = type;
+        }
+    }
+
+    if (maxScore >= 1) {
+        return detectedType;
+    }
+
+    return "General";
+};
 
 export default function BlogsPage() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [showCreateForm, setShowCreateForm] = useState(false);
+    const [newPostTitle, setNewPostTitle] = useState("");
     const [newPostContent, setNewPostContent] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
+    const [searchTerm, setSearchTerm] = useState("");
+    const [showSearchPanel, setShowSearchPanel] = useState(false);
+    const [selectedType, setSelectedType] = useState("All");
+    const [showNameSuggestions, setShowNameSuggestions] = useState(false);
     const router = useRouter();
     const toast = useToast();
     const POST_PREVIEW_LENGTH = 280;
@@ -78,17 +143,26 @@ export default function BlogsPage() {
 
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const trimmedTitle = newPostTitle.trim();
+        const trimmedContent = newPostContent.trim();
+
+        if (!trimmedTitle) {
+            toast.error("Please enter a heading");
+            return;
+        }
         
-        if (!newPostContent.trim()) {
+        if (!trimmedContent) {
             toast.error("Please enter some content");
             return;
         }
 
         try {
             setIsSubmitting(true);
-            const response = await postApi.createPost(newPostContent);
+            const response = await postApi.createPost(trimmedTitle, trimmedContent);
             if (response.success) {
                 console.log("Post created successfully");
+                setNewPostTitle("");
                 setNewPostContent("");
                 setShowCreateForm(false);
                 toast.success("Post created successfully!");
@@ -122,6 +196,87 @@ export default function BlogsPage() {
             [postId]: !prev[postId]
         }));
     };
+
+    const blogTypeCounts = useMemo(() => {
+        return posts.reduce((acc, post) => {
+            const type = getBlogType(post.content);
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+    }, [posts]);
+
+    const blogTypes = useMemo(() => {
+        const sortedTypes = Object.keys(blogTypeCounts).sort((a, b) => blogTypeCounts[b] - blogTypeCounts[a]);
+        return ["All", ...sortedTypes];
+    }, [blogTypeCounts]);
+
+    const searchSuggestions = useMemo(() => {
+        const authorSuggestions = Array.from(new Set(posts.map((post) => post.user?.name).filter(Boolean) as string[])).slice(0, 4);
+
+        const keywordMap = new Map<string, number>();
+        for (const post of posts) {
+            const words = post.content
+                .toLowerCase()
+                .split(/[^a-z0-9]+/)
+                .filter((word) => word.length >= 4 && !STOP_WORDS.has(word));
+
+            for (const word of words) {
+                keywordMap.set(word, (keywordMap.get(word) || 0) + 1);
+            }
+        }
+
+        const keywordSuggestions = Array.from(keywordMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 6)
+            .map(([keyword]) => keyword);
+
+        return [...authorSuggestions, ...keywordSuggestions].slice(0, 8);
+    }, [posts]);
+
+    const authorNameSuggestions = useMemo(() => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) return [];
+
+        const allAuthors = Array.from(
+            new Set(posts.map((post) => post.user?.name).filter(Boolean) as string[])
+        );
+
+        return allAuthors
+            .filter((name) => name.toLowerCase().includes(query))
+            .slice(0, 6);
+    }, [posts, searchTerm]);
+
+    const globalAutocompleteSuggestions = useMemo(() => {
+        const allAuthors = Array.from(
+            new Set(posts.map((post) => post.user?.name).filter(Boolean) as string[])
+        );
+
+        const source = Array.from(new Set([...allAuthors, ...searchSuggestions]));
+        const query = searchTerm.trim().toLowerCase();
+
+        if (!query) {
+            return source.slice(0, 8);
+        }
+
+        return source
+            .filter((item) => item.toLowerCase().includes(query))
+            .slice(0, 8);
+    }, [posts, searchSuggestions, searchTerm]);
+
+    const filteredPosts = useMemo(() => {
+        const query = searchTerm.trim().toLowerCase();
+        return posts.filter((post) => {
+            const content = post.content?.toLowerCase() || "";
+            const title = post.title?.toLowerCase() || "";
+            const authorName = post.user?.name?.toLowerCase() || "";
+            const blogType = getBlogType(post.content);
+
+            const matchesQuery = !query || content.includes(query) || title.includes(query) || authorName.includes(query);
+            const matchesType = selectedType === "All" || blogType === selectedType;
+
+            return matchesQuery && matchesType;
+        });
+    }, [posts, searchTerm, selectedType]);
 
     if (loading) {
         return (
@@ -214,6 +369,130 @@ export default function BlogsPage() {
                             </button>
                         </div>
                     </div>
+
+                    <div className="mt-4">
+                        <label htmlFor="blog-search" className="block text-sm font-medium text-slate-200 mb-2">
+                            Search Posts
+                        </label>
+                        <div className="relative flex gap-2">
+                            <input
+                                id="blog-search"
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => {
+                                    setSearchTerm(e.target.value);
+                                    setShowNameSuggestions(true);
+                                }}
+                                onFocus={() => {
+                                    setShowNameSuggestions(true);
+                                }}
+                                onBlur={() => {
+                                    setTimeout(() => setShowNameSuggestions(false), 120);
+                                }}
+                                placeholder="Search by content or author name..."
+                                className="w-full min-h-11 rounded-lg border border-white/15 bg-slate-950 px-4 py-2 text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowSearchPanel((prev) => !prev)}
+                                className="min-h-11 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                            >
+                                Search
+                            </button>
+
+                            {showNameSuggestions && (
+                                <div className="absolute left-0 right-22.5 top-13 z-20 rounded-lg border border-white/15 bg-slate-900 shadow-xl overflow-hidden">
+                                    {globalAutocompleteSuggestions.length > 0 ? (
+                                        <>
+                                            <div className="px-4 py-2 text-xs text-slate-400 border-b border-white/10">
+                                                Global Suggestions
+                                            </div>
+                                            {globalAutocompleteSuggestions.map((suggestion) => (
+                                                <button
+                                                    key={suggestion}
+                                                    type="button"
+                                                    onMouseDown={(e) => e.preventDefault()}
+                                                    onClick={() => {
+                                                        setSearchTerm(suggestion);
+                                                        setShowNameSuggestions(false);
+                                                    }}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-800 transition-colors"
+                                                >
+                                                    {suggestion}
+                                                </button>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <div className="px-4 py-2 text-sm text-slate-400">No suggestions found</div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {showSearchPanel && (
+                            <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 p-4 space-y-4">
+                                <div>
+                                    <p className="text-sm font-semibold text-white mb-2">Blog Types</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {blogTypes.map((type) => (
+                                            <button
+                                                key={type}
+                                                type="button"
+                                                onClick={() => setSelectedType(type)}
+                                                className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                                                    selectedType === type
+                                                        ? "bg-blue-600 border-blue-500 text-white"
+                                                        : "bg-slate-900 border-white/15 text-slate-300 hover:bg-slate-800"
+                                                }`}
+                                            >
+                                                {type} {type !== "All" ? `(${blogTypeCounts[type] || 0})` : `(${posts.length})`}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-sm font-semibold text-white mb-2">Suggestions</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {searchSuggestions.length > 0 ? (
+                                            searchSuggestions.map((suggestion) => (
+                                                <button
+                                                    key={suggestion}
+                                                    type="button"
+                                                    onClick={() => setSearchTerm(suggestion)}
+                                                    className="px-3 py-1.5 rounded-full text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                                >
+                                                    {suggestion}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <p className="text-sm text-slate-400">No suggestions yet</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setSearchTerm("");
+                                            setSelectedType("All");
+                                        }}
+                                        className="px-3 py-1.5 rounded-md text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                    >
+                                        Reset Filters
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowSearchPanel(false)}
+                                        className="px-3 py-1.5 rounded-md text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Create Post Form - Only for Authenticated Users */}
@@ -221,6 +500,25 @@ export default function BlogsPage() {
                     <div className="bg-slate-900/70 rounded-xl border border-white/10 p-6 mb-6">
                         <h2 className="text-xl font-semibold text-white mb-4">Create New Blog Post</h2>
                         <form onSubmit={handleCreatePost}>
+                            <div className="mb-4">
+                                <label htmlFor="title" className="block text-sm font-medium text-slate-200 mb-2">
+                                    Heading
+                                </label>
+                                <input
+                                    id="title"
+                                    type="text"
+                                    value={newPostTitle}
+                                    onChange={(e) => setNewPostTitle(e.target.value)}
+                                    maxLength={120}
+                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Enter blog heading..."
+                                    required
+                                />
+                                <div className="mt-1 text-sm text-slate-400 text-right">
+                                    {newPostTitle.length} / 120 characters
+                                </div>
+                            </div>
+
                             <div className="mb-4">
                                 <label htmlFor="content" className="block text-sm font-medium text-slate-200 mb-2">
                                     Post Content
@@ -244,6 +542,7 @@ export default function BlogsPage() {
                                     type="button"
                                     onClick={() => {
                                         setShowCreateForm(false);
+                                        setNewPostTitle("");
                                         setNewPostContent("");
                                     }}
                                     className="min-h-11 px-4 py-2 border border-white/20 text-slate-200 rounded-lg hover:bg-white/10 transition-colors"
@@ -252,7 +551,7 @@ export default function BlogsPage() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSubmitting || !newPostContent.trim()}
+                                    disabled={isSubmitting || !newPostTitle.trim() || !newPostContent.trim()}
                                     className="min-h-11 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                                 >
                                     {isSubmitting ? (
@@ -316,9 +615,24 @@ export default function BlogsPage() {
                             </button>
                         )}
                     </div>
+                ) : filteredPosts.length === 0 ? (
+                    <div className="text-center py-16 bg-slate-900/70 rounded-xl border border-white/10">
+                        <h3 className="text-xl font-semibold text-white mb-2">No matching posts found</h3>
+                        <p className="text-slate-400 mb-6">Try a different keyword, choose another type, or clear your search.</p>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSearchTerm("");
+                                setSelectedType("All");
+                            }}
+                            className="min-h-11 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                        >
+                            Clear Search & Filters
+                        </button>
+                    </div>
                 ) : (
                     <div className="space-y-6">
-                        {posts.map((post) => (
+                        {filteredPosts.map((post) => (
                             <article
                                 key={post._id}
                                 className="bg-slate-900/75 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 p-6"
@@ -332,28 +646,60 @@ export default function BlogsPage() {
 
                                     return (
                                         <>
+                                <h3 className="text-xl font-semibold text-white mb-3">
+                                    {post.title || "Untitled"}
+                                </h3>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
-                                            {post.user?.profileImage ? (
-                                                <img
-                                                    src={buildProfileImageUrl(post.user.profileImage)}
-                                                    alt={post.user?.name || "User"}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
-                                            )}
-                                        </div>
-                                        <div>
-                                            <h3 className="font-semibold text-white text-lg">
-                                                {post.user?.name || "Unknown User"}
-                                            </h3>
-                                            <p className="text-sm text-slate-400">
-                                                {formatDate(post.date)}
-                                            </p>
-                                        </div>
+                                        {post.user?._id ? (
+                                            <Link href={`/users/${post.user._id}`} className="flex items-center gap-3 group">
+                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                                    {post.user?.profileImage ? (
+                                                        <img
+                                                            src={buildProfileImageUrl(post.user.profileImage)}
+                                                            alt={post.user?.name || "User"}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-white text-lg group-hover:text-blue-300 transition-colors">
+                                                        {post.user?.name || "Unknown User"}
+                                                    </h3>
+                                                    <p className="text-sm text-slate-400">
+                                                        {formatDate(post.date)}
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        ) : (
+                                            <>
+                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                                    {post.user?.profileImage ? (
+                                                        <img
+                                                            src={buildProfileImageUrl(post.user.profileImage)}
+                                                            alt={post.user?.name || "User"}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-semibold text-white text-lg">
+                                                        {post.user?.name || "Unknown User"}
+                                                    </h3>
+                                                    <p className="text-sm text-slate-400">
+                                                        {formatDate(post.date)}
+                                                    </p>
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
+                                    <span className="text-xs px-2 py-1 rounded-full bg-blue-900/40 border border-blue-500/40 text-blue-200">
+                                        {getBlogType(post.content)}
+                                    </span>
                                 </div>
 
                                 <div className="mb-4">
@@ -413,7 +759,7 @@ export default function BlogsPage() {
                 )}
 
                 {/* Call to Action for Non-Authenticated Users */}
-                {!isAuthenticated && posts.length > 0 && (
+                {!isAuthenticated && filteredPosts.length > 0 && (
                     <div className="mt-12 bg-linear-to-r from-blue-700 to-purple-700 rounded-2xl p-8 text-center text-white shadow-xl">
                         <h3 className="text-2xl font-bold mb-3">Ready to share your story?</h3>
                         <p className="text-blue-100 mb-6 text-lg">
