@@ -78,7 +78,7 @@ export default function BlogsPage() {
     if (loading) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="flex items-center justify-center min-h-[400px]">
+                <div className="flex items-center justify-center min-h-100">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
             </div>
@@ -140,7 +140,7 @@ export default function BlogsPage() {
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
                                         {post.user?.profileImage ? (
                                             <img
                                                 src={buildProfileImageUrl(post.user.profileImage)}
