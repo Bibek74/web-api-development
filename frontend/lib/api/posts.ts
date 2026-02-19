@@ -9,6 +9,7 @@ export interface Post {
         email: string;
         profileImage?: string;
     };
+    title?: string;
     content: string;
     date: string;
     likes: string[];
@@ -34,8 +35,9 @@ export const postApi = {
     },
 
     // Create new post
-    createPost: async (content: string) => {
+    createPost: async (title: string, content: string) => {
         const response = await axiosInstance.post<SinglePostResponse>(API.POST.NEW, {
+            title,
             content
         });
         return response.data;
