@@ -148,28 +148,57 @@ export default function HomePage() {
                   <div className="p-6">
                     {/* Author Info */}
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
-                        {post.user?.profileImage ? (
-                          <img
-                            src={buildProfileImageUrl(post.user.profileImage)}
-                            alt={post.user?.name || "User"}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white">
-                          {post.user?.name || "Unknown User"}
-                        </p>
-                        <p className="text-xs text-white/60">
-                          {formatDate(post.date)}
-                        </p>
-                      </div>
+                      {post.user?._id ? (
+                        <Link href={`/users/${post.user._id}`} className="flex items-center gap-3 group">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                            {post.user?.profileImage ? (
+                              <img
+                                src={buildProfileImageUrl(post.user.profileImage)}
+                                alt={post.user?.name || "User"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-white group-hover:text-blue-300 transition-colors">
+                              {post.user?.name || "Unknown User"}
+                            </p>
+                            <p className="text-xs text-white/60">
+                              {formatDate(post.date)}
+                            </p>
+                          </div>
+                        </Link>
+                      ) : (
+                        <>
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                            {post.user?.profileImage ? (
+                              <img
+                                src={buildProfileImageUrl(post.user.profileImage)}
+                                alt={post.user?.name || "User"}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <>{post.user?.name?.[0]?.toUpperCase() || "U"}</>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-white">
+                              {post.user?.name || "Unknown User"}
+                            </p>
+                            <p className="text-xs text-white/60">
+                              {formatDate(post.date)}
+                            </p>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Post Content Preview */}
+                    <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2">
+                      {post.title || "Untitled"}
+                    </h3>
                     <p className="text-white/80 line-clamp-4 mb-4 leading-relaxed">
                       {post.content}
                     </p>
