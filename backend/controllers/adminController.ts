@@ -16,11 +16,19 @@ export class AdminController {
                 userModel.countDocuments()
             ]);
 
+            const usersWithPostCount = users.map((user) => {
+                const userObject = user.toObject();
+                return {
+                    ...userObject,
+                    postsCount: Array.isArray(userObject.posts) ? userObject.posts.length : 0
+                };
+            });
+
             const totalPages = Math.max(Math.ceil(totalUsers / limit), 1);
 
             res.json({ 
                 success: true, 
-                data: users,
+                data: usersWithPostCount,
                 pagination: {
                     page,
                     limit,
@@ -68,6 +76,7 @@ export class AdminController {
         try {
             // Validate request body
             const validatedData = signupSchema.parse(req.body);
+            const uploadedFile = (req as any).file as { filename?: string } | undefined;
             
             // Check if a user with the provided email already exists
             const existingUser = await userModel.findOne({ email: validatedData.email });
@@ -88,7 +97,8 @@ export class AdminController {
                 name: validatedData.name,
                 email: validatedData.email,
                 password: hash,
-                role: validatedData.role || "user"
+                role: validatedData.role || "user",
+                profileImage: uploadedFile?.filename
             });
 
             res.status(201).json({ 
@@ -98,7 +108,8 @@ export class AdminController {
                     _id: createdUser._id,
                     name: createdUser.name,
                     email: createdUser.email,
-                    role: createdUser.role
+                    role: createdUser.role,
+                    profileImage: createdUser.profileImage
                 }
             });
         } catch (err) {
@@ -114,6 +125,7 @@ export class AdminController {
         try {
             const { name, email, role, password } = req.body;
             const userId = req.params.id;
+            const uploadedFile = (req as any).file as { filename?: string } | undefined;
 
             const user = await userModel.findById(userId);
             if (!user) {
@@ -137,15 +149,57 @@ export class AdminController {
             }
 
             // Update fields
-            if (name) user.name = name;
-            if (email) user.email = email;
-            if (role) user.role = role;
+            if (name !== undefined) {
+                const trimmedName = String(name).trim();
+                if (trimmedName.length < 2) {
+                    res.status(400).json({
+                        message: "Name must be at least 2 characters",
+                        success: false,
+                    });
+                    return;
+                }
+                user.name = trimmedName;
+            }
+
+            if (email !== undefined) {
+                const normalizedEmail = String(email).trim().toLowerCase();
+                if (!normalizedEmail) {
+                    res.status(400).json({
+                        message: "Email is required",
+                        success: false,
+                    });
+                    return;
+                }
+                user.email = normalizedEmail;
+            }
+
+            if (role !== undefined) {
+                if (role !== "user" && role !== "admin") {
+                    res.status(400).json({
+                        message: "Invalid role. Must be 'user' or 'admin'",
+                        success: false,
+                    });
+                    return;
+                }
+                user.role = role;
+            }
             
             // Hash new password if provided
-            if (password) {
+            if (password && String(password).trim()) {
+                if (String(password).trim().length < 6) {
+                    res.status(400).json({
+                        message: "Password must be at least 6 characters",
+                        success: false,
+                    });
+                    return;
+                }
                 const salt = await bcrypt.genSalt(10);
-                const hash = await bcrypt.hash(password, salt);
+                const hash = await bcrypt.hash(String(password).trim(), salt);
                 user.password = hash;
+            }
+
+            if (uploadedFile?.filename) {
+                user.profileImage = uploadedFile.filename;
             }
 
             await user.save();
@@ -157,7 +211,8 @@ export class AdminController {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    profileImage: user.profileImage
                 }
             });
         } catch (err) {
