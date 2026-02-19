@@ -1,5 +1,6 @@
 import axiosInstance from "./axios";
 import { API } from "./endpoints";
+import { Post } from "./posts";
 
 export interface UserProfile {
     _id: string;
@@ -7,13 +8,27 @@ export interface UserProfile {
     email: string;
     role: string;
     profileImage?: string;
-    posts: any[];
+    posts: Post[];
+}
+
+export interface PublicUserProfile {
+    _id: string;
+    name: string;
+    role: string;
+    profileImage?: string;
 }
 
 export interface ProfileResponse {
     message: string;
-    posts?: any[];
+    posts?: Post[];
     result?: UserProfile;
+    success: boolean;
+}
+
+export interface PublicProfileResponse {
+    message: string;
+    posts?: Post[];
+    result?: PublicUserProfile;
     success: boolean;
 }
 
@@ -58,6 +73,12 @@ export const profileApi = {
     // Visit other profiles
     visitProfiles: async () => {
         const response = await axiosInstance.get(API.PROFILE.VISIT);
+        return response.data;
+    },
+
+    // Get public profile by id
+    getPublicProfileById: async (id: string) => {
+        const response = await axiosInstance.get<PublicProfileResponse>(API.PROFILE.VISIT_BY_ID(id));
         return response.data;
     }
 };
