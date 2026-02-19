@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useToast } from "@/lib/toast";
 import {
   buildProfileImageUrl,
   clearSessionCookies,
@@ -13,6 +14,7 @@ import {
 
 export default function Header() {
   const router = useRouter();
+  const toast = useToast();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -35,7 +37,10 @@ export default function Header() {
     };
   }, [pathname]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const shouldLogout = await toast.confirm("Are you sure you want to log out?", "Logout");
+    if (!shouldLogout) return;
+
     clearSessionCookies();
     setUser(null);
     setIsLoggedIn(false);
