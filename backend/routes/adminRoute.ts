@@ -1,6 +1,7 @@
 import express from "express";
 import { AdminController } from "../controllers/adminController.js";
 import { jwtAuthMiddleware } from "../utils/jwt.js";
+import { uploadProfilePhoto } from "../middlewares/uploadProfilePhoto.js";
 
 const adminRouter = express.Router();
 const adminController = new AdminController();
@@ -24,8 +25,8 @@ adminRouter.use(isAdmin);
 // User management routes
 adminRouter.get("/users", adminController.getAllUsers);
 adminRouter.get("/users/:id", adminController.getUserById);
-adminRouter.post("/users", adminController.createUser);
-adminRouter.put("/users/:id", adminController.updateUser);
+adminRouter.post("/users", uploadProfilePhoto.single("image"), adminController.createUser);
+adminRouter.put("/users/:id", uploadProfilePhoto.single("image"), adminController.updateUser);
 adminRouter.delete("/users/:id", adminController.deleteUser);
 
 export default adminRouter;
