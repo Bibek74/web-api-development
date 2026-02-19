@@ -80,7 +80,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="fixed top-4 right-4 z-[9999] flex w-full max-w-sm flex-col gap-2 px-4 pointer-events-none">
+      <div className="fixed top-4 right-4 z-9999 flex w-full max-w-sm flex-col gap-2 px-4 pointer-events-none">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -108,7 +108,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       </div>
 
       {confirmState.open && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/50 p-4">
+        <div className="fixed inset-0 z-9998 flex items-center justify-center bg-black/50 p-4">
           <div className="w-full max-w-md rounded-xl border border-white/15 bg-slate-900 p-5 shadow-2xl">
             <h3 className="text-lg font-semibold text-white">{confirmState.title}</h3>
             <p className="mt-2 text-sm text-slate-300">{confirmState.message}</p>
