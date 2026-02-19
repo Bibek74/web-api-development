@@ -5,13 +5,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/api/axios";
 import { useToast } from "@/lib/toast";
+import { buildProfileImageUrl } from "@/lib/user-session";
 
 type UserDTO = {
   _id: string;
   name?: string;
   email?: string;
   role?: "user" | "admin";
-  image?: string;
+  profileImage?: string;
   createdAt?: string;
 };
 
@@ -121,7 +122,7 @@ export default function AdminUserByIdPage() {
         {/* Error State */}
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 flex items-start gap-3">
-            <svg className="w-6 h-6 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
@@ -135,10 +136,18 @@ export default function AdminUserByIdPage() {
         {!loading && !error && user && (
           <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl shadow-lg overflow-hidden border border-white/10">
             {/* User Header with Avatar */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white">
+            <div className="bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white">
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold ring-4 ring-white/30">
-                  {user.name?.[0]?.toUpperCase() || "U"}
+                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold ring-4 ring-white/30 overflow-hidden">
+                  {user.profileImage ? (
+                    <img
+                      src={buildProfileImageUrl(user.profileImage)}
+                      alt={user.name || "User"}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    user.name?.[0]?.toUpperCase() || "U"
+                  )}
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold">{user.name || "Unknown User"}</h2>
