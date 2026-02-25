@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { profileApi, UserProfile } from "@/lib/api/profile";
 import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useToast } from "@/lib/toast";
-import { setSessionUser } from "@/lib/user-session";
+import { buildPostImageUrl, setSessionUser } from "@/lib/user-session";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -19,10 +20,12 @@ export default function ProfilePage() {
     const [isSaving, setIsSaving] = useState(false);
     const [uploadingImage, setUploadingImage] = useState(false);
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
+    const [editingPostTitle, setEditingPostTitle] = useState("");
     const [editingPostContent, setEditingPostContent] = useState("");
     const [isUpdatingPost, setIsUpdatingPost] = useState(false);
     const [newPostTitle, setNewPostTitle] = useState("");
     const [newPostContent, setNewPostContent] = useState("");
+    const [newPostImage, setNewPostImage] = useState<File | null>(null);
     const [isCreatingPost, setIsCreatingPost] = useState(false);
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
     const [postSearchTerm, setPostSearchTerm] = useState("");
@@ -191,7 +194,7 @@ export default function ProfilePage() {
 
         try {
             setIsCreatingPost(true);
-            const response = await postApi.createPost(trimmedTitle, trimmedContent);
+            const response = await postApi.createPost(trimmedTitle, trimmedContent, newPostImage);
 
             if (response.success && response.result) {
                 const createdPost: Post = {
@@ -206,6 +209,7 @@ export default function ProfilePage() {
                 setPosts((prevPosts) => [createdPost, ...prevPosts]);
                 setNewPostTitle("");
                 setNewPostContent("");
+                setNewPostImage(null);
                 toast.success("Post created successfully!");
             } else {
                 toast.error(response.message || "Failed to create post");
@@ -219,11 +223,13 @@ export default function ProfilePage() {
 
     const handleStartEditPost = (post: Post) => {
         setEditingPostId(post._id);
+        setEditingPostTitle(post.title || "");
         setEditingPostContent(post.content);
     };
 
     const handleCancelEditPost = () => {
         setEditingPostId(null);
+        setEditingPostTitle("");
         setEditingPostContent("");
     };
 
@@ -248,7 +254,12 @@ export default function ProfilePage() {
     const handleSaveEditedPost = async () => {
         if (!editingPostId) return;
 
+        const trimmedTitle = editingPostTitle.trim();
         const trimmedContent = editingPostContent.trim();
+        if (!trimmedTitle) {
+            toast.error("Post heading cannot be empty");
+            return;
+        }
         if (!trimmedContent) {
             toast.error("Post content cannot be empty");
             return;
@@ -256,17 +267,18 @@ export default function ProfilePage() {
 
         try {
             setIsUpdatingPost(true);
-            const response = await postApi.updatePost(editingPostId, trimmedContent);
+            const response = await postApi.updatePost(editingPostId, trimmedTitle, trimmedContent);
 
             if (response.success) {
                 setPosts((prevPosts) =>
                     prevPosts.map((post) =>
                         post._id === editingPostId
-                            ? { ...post, content: trimmedContent }
+                            ? { ...post, title: trimmedTitle, content: trimmedContent }
                             : post
                     )
                 );
                 setEditingPostId(null);
+                setEditingPostTitle("");
                 setEditingPostContent("");
                 toast.success("Post updated successfully!");
             } else {
@@ -281,7 +293,7 @@ export default function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+            <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
                 <div className="container mx-auto px-4 py-8 pt-20">
                     <div className="flex items-center justify-center min-h-100">
                         <div className="text-center">
@@ -296,7 +308,7 @@ export default function ProfilePage() {
 
     if (authError) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+            <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
                 <div className="container mx-auto px-4 py-8 pt-20 max-w-2xl">
                     <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 rounded-2xl p-8 text-center">
                         <svg className="w-20 h-20 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -319,7 +331,7 @@ export default function ProfilePage() {
     if (!profile) return null;
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
             {/* Decorative background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -328,6 +340,19 @@ export default function ProfilePage() {
             </div>
 
             <div className="relative container mx-auto px-4 py-8 pt-20 max-w-5xl">
+                {profile.role === "admin" && (
+                    <div className="mb-6">
+                        <Link
+                            href="/admin"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-white/20 text-slate-300 rounded-lg hover:bg-slate-600/50 transition-colors shadow-sm font-medium"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back to Admin Panel
+                        </Link>
+                    </div>
+                )}
                 <div className="bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/10">
                     {/* Header Section with Bold Gradient */}
                     <div className="relative bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 h-48 overflow-hidden">
@@ -527,6 +552,15 @@ export default function ProfilePage() {
                                     placeholder="Write your new blog post..."
                                     required
                                 />
+                                <div>
+                                    <label className="block text-sm font-bold text-slate-300 mb-2">Post Image (optional)</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => setNewPostImage(e.target.files?.[0] || null)}
+                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
                                 <div className="flex items-center justify-between gap-3">
                                     <p className="text-sm text-slate-400">{newPostTitle.length} / 120 · {newPostContent.length} / 5000</p>
                                     <button
@@ -648,6 +682,13 @@ export default function ProfilePage() {
                                             </div>
                                             {editingPostId === post._id ? (
                                                 <div className="space-y-3">
+                                                    <input
+                                                        value={editingPostTitle}
+                                                        onChange={(e) => setEditingPostTitle(e.target.value)}
+                                                        maxLength={120}
+                                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="Post heading"
+                                                    />
                                                     <textarea
                                                         value={editingPostContent}
                                                         onChange={(e) => setEditingPostContent(e.target.value)}
@@ -667,7 +708,7 @@ export default function ProfilePage() {
                                                         <button
                                                             type="button"
                                                             onClick={handleSaveEditedPost}
-                                                            disabled={isUpdatingPost || !editingPostContent.trim()}
+                                                            disabled={isUpdatingPost || !editingPostTitle.trim() || !editingPostContent.trim()}
                                                             className="min-h-10 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
                                                         >
                                                             {isUpdatingPost ? "Saving..." : "Save"}
@@ -679,6 +720,13 @@ export default function ProfilePage() {
                                                     <h3 className="text-xl font-semibold text-white mb-3">
                                                         {post.title || "Untitled"}
                                                     </h3>
+                                                    {post.image && (
+                                                        <img
+                                                            src={buildPostImageUrl(post.image)}
+                                                            alt={post.title || "Post image"}
+                                                            className="mb-4 w-full max-h-96 object-cover rounded-lg border border-white/10"
+                                                        />
+                                                    )}
                                                     <p className="text-slate-200 leading-relaxed whitespace-pre-wrap">
                                                         {expandedPosts[post._id] || post.content.length <= POST_PREVIEW_LENGTH
                                                             ? post.content
