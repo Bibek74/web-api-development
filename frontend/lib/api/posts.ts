@@ -6,11 +6,11 @@ export interface Post {
     user: {
         _id: string;
         name: string;
-        email: string;
         profileImage?: string;
     };
     title?: string;
     content: string;
+    image?: string;
     date: string;
     likes: string[];
 }
@@ -35,10 +35,18 @@ export const postApi = {
     },
 
     // Create new post
-    createPost: async (title: string, content: string) => {
-        const response = await axiosInstance.post<SinglePostResponse>(API.POST.NEW, {
-            title,
-            content
+    createPost: async (title: string, content: string, imageFile?: File | null) => {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("content", content);
+        if (imageFile) {
+            formData.append("postImage", imageFile);
+        }
+
+        const response = await axiosInstance.post<SinglePostResponse>(API.POST.NEW, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
         });
         return response.data;
     },
@@ -50,10 +58,22 @@ export const postApi = {
     },
 
     // Update post
-    updatePost: async (id: string, content: string) => {
+    updatePost: async (id: string, title: string, content: string, imageFile?: File | null) => {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("content", content);
+        if (imageFile) {
+            formData.append("postImage", imageFile);
+        }
+
         const response = await axiosInstance.put<SinglePostResponse>(
             API.POST.UPDATE(id),
-            { content }
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            }
         );
         return response.data;
     },
