@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { postApi, Post } from "@/lib/api/posts";
-import { buildProfileImageUrl } from "@/lib/user-session";
+import { buildPostImageUrl, buildProfileImageUrl } from "@/lib/user-session";
 
 export default function HomePage() {
   const [recentPosts, setRecentPosts] = useState<Post[]>([]);
@@ -199,6 +199,13 @@ export default function HomePage() {
                     <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2">
                       {post.title || "Untitled"}
                     </h3>
+                    {post.image && (
+                      <img
+                        src={buildPostImageUrl(post.image)}
+                        alt={post.title || "Post image"}
+                        className="w-full h-48 object-cover rounded-lg mb-3 border border-white/10"
+                      />
+                    )}
                     <p className="text-white/80 line-clamp-4 mb-4 leading-relaxed">
                       {post.content}
                     </p>
