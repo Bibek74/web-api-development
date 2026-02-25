@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import axiosInstance from "@/lib/api/axios";
+import { useTheme } from "@/lib/theme";
 
 export default function AdminCreateUserPage() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,18 +56,18 @@ export default function AdminCreateUserPage() {
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white flex items-center gap-2">
+        <h1 className={`text-3xl font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
           <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
           </svg>
           Create New User
         </h1>
-        <p className="text-slate-300 mt-1">Add a new user to the system</p>
+        <p className={`mt-1 ${isDark ? "text-slate-300" : "text-slate-600"}`}>Add a new user to the system</p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl shadow-lg overflow-hidden border border-white/10">
-        <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
+      <div className={`backdrop-blur-xl rounded-xl shadow-lg overflow-hidden ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
+        <div className="bg-linear-to-r from-green-600 to-emerald-600 p-6 text-white">
           <h2 className="text-xl font-bold">User Information</h2>
           <p className="text-green-100 text-sm mt-1">Fill in the details below</p>
         </div>
@@ -73,7 +76,7 @@ export default function AdminCreateUserPage() {
           <div className="space-y-6">
             {/* Name Input */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-slate-300 mb-2">
+              <label htmlFor="name" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                 Full Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -81,14 +84,14 @@ export default function AdminCreateUserPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all text-white placeholder-slate-500"
+                className={`w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
                 required
               />
             </div>
 
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-slate-300 mb-2">
+              <label htmlFor="email" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                 Email Address <span className="text-red-400">*</span>
               </label>
               <input
@@ -97,14 +100,14 @@ export default function AdminCreateUserPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="john@example.com"
-                className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all text-white placeholder-slate-500"
+                className={`w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
                 required
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-slate-300 mb-2">
+              <label htmlFor="password" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                 Password <span className="text-red-400">*</span>
               </label>
               <input
@@ -113,21 +116,21 @@ export default function AdminCreateUserPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all text-white placeholder-slate-500"
+                className={`w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
                 required
               />
             </div>
 
             {/* Role Select */}
             <div>
-              <label htmlFor="role" className="block text-sm font-semibold text-slate-300 mb-2">
+              <label htmlFor="role" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                 User Role
               </label>
               <select
                 id="role"
                 value={role}
                 onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all appearance-none text-white"
+                className={`w-full px-4 py-3 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all appearance-none ${isDark ? "bg-slate-900/50 border border-white/10 text-white" : "bg-white border border-black/15 text-slate-900"}`}
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
@@ -136,16 +139,16 @@ export default function AdminCreateUserPage() {
 
             {/* Image Upload */}
             <div>
-              <label htmlFor="image" className="block text-sm font-semibold text-slate-300 mb-2">
-                Profile Image <span className="text-slate-500 font-normal">(Optional)</span>
+              <label htmlFor="image" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
+                Profile Image <span className={`${isDark ? "text-slate-500" : "text-slate-500"} font-normal`}>(Optional)</span>
               </label>
-              <div className="border-2 border-dashed border-white/20 rounded-lg p-4 hover:border-green-400 transition-colors bg-slate-900/30">
+              <div className={`border-2 border-dashed rounded-lg p-4 hover:border-green-400 transition-colors ${isDark ? "border-white/20 bg-slate-900/30" : "border-black/15 bg-slate-50"}`}>
                 <input
                   id="image"
                   type="file"
                   accept="image/*"
                   onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                  className="w-full text-sm text-slate-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700"
+                  className={`w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700 ${isDark ? "text-slate-300" : "text-slate-700"}`}
                 />
                 {image && (
                   <p className="text-sm text-green-400 mt-2 flex items-center gap-1">
