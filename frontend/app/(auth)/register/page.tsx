@@ -12,12 +12,16 @@ export default function RegisterPage() {
         className="object-cover"
       />
 
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/65" />
+      <div className="absolute inset-0 bg-linear-to-br from-blue-900/35 via-transparent to-purple-900/35" />
 
       <div className="relative h-full grid place-items-center p-4 pt-20">
-        <section className="w-full max-w-md rounded-xl border-2 border-white/35 bg-black/40 backdrop-blur p-6 text-white shadow-xl">
-          <h1 className="text-2xl font-bold">Create account</h1>
-          <p className="text-sm font-medium text-white/80 mt-1 mb-6">
+        <section className="w-full max-w-md rounded-2xl border border-white/30 bg-black/45 backdrop-blur-xl p-8 text-white shadow-2xl shadow-black/40">
+          <p className="mb-3 inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90">
+            Join Blogify
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight">Create account</h1>
+          <p className="text-sm font-medium text-white/85 mt-1 mb-6">
             Get started in under a minute
           </p>
 
