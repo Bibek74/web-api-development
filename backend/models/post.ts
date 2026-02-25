@@ -5,6 +5,7 @@ export interface IPost extends Document {
     date: Date;
     title: string;
     content: string;
+    image?: string;
     likes: mongoose.Types.ObjectId[];
 }
 
@@ -24,6 +25,7 @@ const postSchema = new Schema<IPost>({
         default: "Untitled"
     },
     content: { type: String, required: true },
+    image: { type: String, default: "" },
     likes: [
         {
             type: Schema.Types.ObjectId,
