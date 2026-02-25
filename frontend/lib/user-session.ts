@@ -58,3 +58,9 @@ export const buildProfileImageUrl = (profileImage?: string) => {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
   return `${base}${profileImage}`;
 };
+
+export const buildPostImageUrl = (postImage?: string) => {
+  if (!postImage) return "";
+  const base = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+  return `${base}${postImage}`;
+};
