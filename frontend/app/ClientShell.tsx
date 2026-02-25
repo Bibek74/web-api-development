@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import Header from "./(navigation)/Header";
 import Footer from "./(navigation)/Footer";
 import { ToastProvider } from "@/lib/toast";
+import ThemeToggle from "./(navigation)/ThemeToggle";
+import { getSessionUser } from "@/lib/user-session";
 
 export default function ClientShell({
   children,
@@ -11,25 +13,24 @@ export default function ClientShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const sessionUser = getSessionUser();
+  const hideProfileHeaderForAdmin = pathname === "/profile" && sessionUser?.role === "admin";
 
-  const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs";
+  const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs" || hideProfileHeaderForAdmin;
   const hideFooter = pathname.startsWith("/admin");
-
-  if (hideHeader) {
-    return (
-      <ToastProvider>
-        {children}
-        {!hideFooter && <Footer />}
-      </ToastProvider>
-    );
-  }
 
   return (
     <ToastProvider>
-      <Header />
-      {/* Header is fixed, so push content down */}
-      <main className="pt-0">{children}</main>
+      {hideHeader ? (
+        children
+      ) : (
+        <>
+          <Header />
+          <main className="pt-0">{children}</main>
+        </>
+      )}
       {!hideFooter && <Footer />}
+      <ThemeToggle />
     </ToastProvider>
   );
 }
