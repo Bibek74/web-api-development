@@ -34,7 +34,7 @@ export default function LoginForm() {
         const role = res.data?.role;
 
         if (role === "admin") {
-          router.replace("/admin/users");
+          router.replace("/admin");
         } else {
           router.replace("/home"); 
         }
@@ -45,28 +45,28 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="space-y-5">
+    <form onSubmit={handleSubmit(submit)} className="space-y-6">
       {/* Email */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold" htmlFor="email">
+        <label className="text-sm font-semibold text-white/95" htmlFor="email">
           Email
         </label>
         <input
           id="email"
           type="email"
           autoComplete="email"
-          className="h-10 w-full rounded-md border-2 border-white/45 bg-white/10 px-3 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-white/70 focus:bg-white/20"
+          className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
           {...register("email")}
           placeholder="you@example.com"
         />
         {errors.email?.message && (
-          <p className="text-[11px] text-red-600">{errors.email.message}</p>
+          <p className="text-xs text-red-300">{errors.email.message}</p>
         )}
       </div>
 
       {/* Password */}
       <div className="space-y-2">
-        <label className="text-sm font-semibold" htmlFor="password">
+        <label className="text-sm font-semibold text-white/95" htmlFor="password">
           Password
         </label>
         <div className="relative">
@@ -74,14 +74,14 @@ export default function LoginForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             autoComplete="current-password"
-            className="h-10 w-full rounded-md border-2 border-white/45 bg-white/10 px-3 pr-10 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-white/70 focus:bg-white/20"
+            className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
             {...register("password")}
             placeholder="••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute inset-y-0 right-0 px-2 text-white/80 hover:text-white"
+            className="absolute inset-y-0 right-0 px-3 text-white/80 hover:text-white"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -97,10 +97,10 @@ export default function LoginForm() {
           </button>
         </div>
         {errors.password?.message && (
-          <p className="text-[11px] text-red-600">{errors.password.message}</p>
+          <p className="text-xs text-red-300">{errors.password.message}</p>
         )}
         <div className="text-right">
-          <Link href="/forgot-password" className="text-xs text-white/80 hover:underline">
+          <Link href="/forgot-password" className="text-xs font-medium text-blue-300 hover:text-blue-200 hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -109,14 +109,18 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting || pending}
-        className="mt-2 h-10 w-full rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 disabled:opacity-60"
+        className="mt-1 h-11 w-full rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold tracking-wide shadow-lg shadow-blue-500/35 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-60"
       >
         {isSubmitting || pending ? "Logging in..." : "Log in"}
       </button>
 
-      <div className="mt-2 text-center text-xs">
+      <p className="text-center text-xs text-white/70">
+        Secure login • Fast access
+      </p>
+
+      <div className="mt-1 text-center text-sm text-white/85">
         Don&apos;t have an account?{" "}
-        <Link href="/register" className="font-semibold hover:underline">
+        <Link href="/register" className="font-semibold text-blue-300 hover:text-blue-200 hover:underline">
           Sign up
         </Link>
       </div>
