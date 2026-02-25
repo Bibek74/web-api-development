@@ -2,7 +2,12 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
+}
+
+html[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,15 +17,214 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+html[data-theme="light"] body {
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+html[data-theme="light"] .bg-slate-950,
+html[data-theme="light"] .bg-slate-900,
+html[data-theme="light"] .bg-slate-800 {
+  background-color: rgb(248 250 252) !important;
+}
+
+html[data-theme="light"] .bg-slate-900\/70,
+html[data-theme="light"] .bg-slate-900\/75,
+html[data-theme="light"] .bg-slate-900\/50,
+html[data-theme="light"] .bg-slate-900\/40,
+html[data-theme="light"] .bg-slate-900\/30,
+html[data-theme="light"] .bg-slate-800\/50,
+html[data-theme="light"] .bg-slate-700\/40,
+html[data-theme="light"] .bg-slate-700\/60 {
+  background-color: rgb(241 245 249 / 0.92) !important;
+}
+
+html[data-theme="light"] .border-white\/10,
+html[data-theme="light"] .border-white\/15,
+html[data-theme="light"] .border-white\/20,
+html[data-theme="light"] .border-white\/30 {
+  border-color: rgb(148 163 184 / 0.35) !important;
+}
+
+html[data-theme="light"] .text-slate-200,
+html[data-theme="light"] .text-slate-300,
+html[data-theme="light"] .text-slate-400,
+html[data-theme="light"] .text-slate-500 {
+  color: rgb(51 65 85) !important;
+}
+
+html[data-theme="light"] .from-slate-900 {
+  --tw-gradient-from: #f1f5f9 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(241 245 249 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+html[data-theme="light"] .via-slate-900 {
+  --tw-gradient-to: rgb(248 250 252 / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), #f8fafc var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+
+html[data-theme="light"] .to-slate-900 {
+  --tw-gradient-to: #f8fafc var(--tw-gradient-to-position) !important;
+}
+
+html[data-theme="light"] .blogs-page .bg-slate-950 .text-white,
+html[data-theme="light"] .blogs-page .bg-slate-900\/70 .text-white,
+html[data-theme="light"] .blogs-page .bg-slate-900\/75 .text-white,
+html[data-theme="light"] .blogs-page .bg-slate-950\/80 .text-white,
+html[data-theme="light"] .blogs-page .bg-slate-800 .text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .blogs-page .bg-slate-950.text-white,
+html[data-theme="light"] .blogs-page .bg-slate-900\/70.text-white,
+html[data-theme="light"] .blogs-page .bg-slate-900\/75.text-white,
+html[data-theme="light"] .blogs-page .bg-slate-950\/80.text-white,
+html[data-theme="light"] .blogs-page .bg-slate-800.text-white,
+html[data-theme="light"] .blogs-page .text-slate-100 {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .blogs-page input.text-white,
+html[data-theme="light"] .blogs-page textarea.text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .blogs-page input.placeholder\:text-slate-400::placeholder,
+html[data-theme="light"] .blogs-page textarea.placeholder\:text-slate-400::placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+html[data-theme="light"] .blogs-page .bg-blue-600.text-white,
+html[data-theme="light"] .blogs-page .bg-green-600.text-white,
+html[data-theme="light"] .blogs-page .bg-purple-600.text-white,
+html[data-theme="light"] .blogs-page .bg-red-600.text-white {
+  color: rgb(255 255 255) !important;
+}
+
+html[data-theme="light"] .blogs-page .text-blue-200 {
+  color: rgb(29 78 216) !important;
+}
+
+html[data-theme="light"] .profile-page .bg-slate-950 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-900 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-900\/50 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-900\/40 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-800\/40 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-700\/40 .text-white,
+html[data-theme="light"] .profile-page .bg-slate-700\/60 .text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .profile-page .bg-slate-950.text-white,
+html[data-theme="light"] .profile-page .bg-slate-900.text-white,
+html[data-theme="light"] .profile-page .bg-slate-900\/50.text-white,
+html[data-theme="light"] .profile-page .bg-slate-800\/40.text-white,
+html[data-theme="light"] .profile-page .text-slate-100,
+html[data-theme="light"] .profile-page .text-slate-200,
+html[data-theme="light"] .profile-page .text-slate-300,
+html[data-theme="light"] .profile-page .text-slate-400,
+html[data-theme="light"] .profile-page .text-slate-500 {
+  color: rgb(30 41 59) !important;
+}
+
+html[data-theme="light"] .profile-page input.text-white,
+html[data-theme="light"] .profile-page textarea.text-white,
+html[data-theme="light"] .profile-page input.bg-slate-900,
+html[data-theme="light"] .profile-page textarea.bg-slate-900,
+html[data-theme="light"] .profile-page input.bg-slate-900\/50 {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .profile-page input.placeholder\:text-slate-500::placeholder,
+html[data-theme="light"] .profile-page textarea.placeholder\:text-slate-500::placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+html[data-theme="light"] .profile-page .bg-blue-600.text-white,
+html[data-theme="light"] .profile-page .bg-purple-600.text-white,
+html[data-theme="light"] .profile-page .from-purple-600.to-pink-600.text-white,
+html[data-theme="light"] .profile-page .from-blue-600.to-cyan-600.text-white {
+  color: rgb(255 255 255) !important;
+}
+
+html[data-theme="light"] .admin-users-page .bg-slate-900 .text-white,
+html[data-theme="light"] .admin-users-page .bg-slate-900\/50 .text-white,
+html[data-theme="light"] .admin-users-page .bg-slate-800\/50 .text-white,
+html[data-theme="light"] .admin-users-page .bg-slate-700 .text-white,
+html[data-theme="light"] .admin-users-page .bg-slate-700\/30 .text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .admin-users-page .bg-slate-900\/50.text-white,
+html[data-theme="light"] .admin-users-page .bg-slate-700.text-white,
+html[data-theme="light"] .admin-users-page .text-slate-200,
+html[data-theme="light"] .admin-users-page .text-slate-300,
+html[data-theme="light"] .admin-users-page .text-slate-400 {
+  color: rgb(51 65 85) !important;
+}
+
+html[data-theme="light"] .admin-users-page input.text-white,
+html[data-theme="light"] .admin-users-page input.bg-slate-900\/50 {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .admin-users-page input.placeholder\:text-slate-400::placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+html[data-theme="light"] .admin-users-page .bg-blue-600.text-white,
+html[data-theme="light"] .admin-users-page .bg-green-600.text-white,
+html[data-theme="light"] .admin-users-page .bg-yellow-600.text-white,
+html[data-theme="light"] .admin-users-page .bg-red-600.text-white {
+  color: rgb(255 255 255) !important;
+}
+
+html[data-theme="light"] .admin-user-page .bg-slate-900 .text-white,
+html[data-theme="light"] .admin-user-page .bg-slate-900\/50 .text-white,
+html[data-theme="light"] .admin-user-page .bg-slate-800\/50 .text-white,
+html[data-theme="light"] .admin-user-page .bg-slate-700\/50 .text-white,
+html[data-theme="light"] .admin-user-page .bg-slate-600\/50 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-900 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-900\/50 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-900\/30 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-800\/50 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-700\/50 .text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-slate-600\/50 .text-white {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .admin-user-page .text-slate-200,
+html[data-theme="light"] .admin-user-page .text-slate-300,
+html[data-theme="light"] .admin-user-page .text-slate-400,
+html[data-theme="light"] .admin-user-page .text-slate-500,
+html[data-theme="light"] .admin-user-edit-page .text-slate-200,
+html[data-theme="light"] .admin-user-edit-page .text-slate-300,
+html[data-theme="light"] .admin-user-edit-page .text-slate-400,
+html[data-theme="light"] .admin-user-edit-page .text-slate-500 {
+  color: rgb(51 65 85) !important;
+}
+
+html[data-theme="light"] .admin-user-edit-page input.text-white,
+html[data-theme="light"] .admin-user-edit-page select.text-white,
+html[data-theme="light"] .admin-user-edit-page input.bg-slate-900\/50,
+html[data-theme="light"] .admin-user-edit-page select.bg-slate-900\/50 {
+  color: rgb(15 23 42) !important;
+}
+
+html[data-theme="light"] .admin-user-edit-page input.placeholder\:text-slate-500::placeholder {
+  color: rgb(100 116 139) !important;
+}
+
+html[data-theme="light"] .admin-user-page .bg-blue-600.text-white,
+html[data-theme="light"] .admin-user-page .bg-red-600.text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-blue-600.text-white,
+html[data-theme="light"] .admin-user-edit-page .bg-red-600.text-white,
+html[data-theme="light"] .admin-user-edit-page .file\:bg-blue-600.file\:text-white {
+  color: rgb(255 255 255) !important;
 }
