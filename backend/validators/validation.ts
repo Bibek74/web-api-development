@@ -32,11 +32,14 @@ export const resetPasswordSchema = z.object({
 // Post Validation Schemas
 export const createPostSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters").max(120, "Title is too long"),
-    content: z.string().min(1, "Content cannot be empty").max(5000, "Content is too long")
+    content: z.string().min(1, "Content cannot be empty").max(5000, "Content is too long"),
+    image: z.string().optional()
 });
 
 export const updatePostSchema = z.object({
-    content: z.string().min(1, "Content cannot be empty").max(5000, "Content is too long")
+    title: z.string().min(3, "Title must be at least 3 characters").max(120, "Title is too long").optional(),
+    content: z.string().min(1, "Content cannot be empty").max(5000, "Content is too long"),
+    image: z.string().optional()
 });
 
 // Profile Validation Schemas
