@@ -39,54 +39,57 @@ export default function RegisterForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="space-y-4">
+    <form onSubmit={handleSubmit(submit)} className="space-y-5">
       <div className="space-y-1">
-        <label className="text-sm font-semibold" htmlFor="name">
+        <label className="text-sm font-semibold text-white/95" htmlFor="name">
           Name
         </label>
         <input
           id="name"
-          className="h-10 w-full rounded-md border-2 border-black/30 dark:border-white/35 bg-background px-3 text-sm font-medium outline-none focus:border-foreground/60"
+          autoComplete="name"
+          className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
           {...register("name")}
           placeholder="Your name"
         />
         {errors.name?.message && (
-          <p className="text-xs text-red-600">{errors.name.message}</p>
+          <p className="text-xs text-red-300">{errors.name.message}</p>
         )}
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold" htmlFor="email">
+        <label className="text-sm font-semibold text-white/95" htmlFor="email">
           Email
         </label>
         <input
           id="email"
           type="email"
-          className="h-10 w-full rounded-md border-2 border-black/30 dark:border-white/35 bg-background px-3 text-sm font-medium outline-none focus:border-foreground/60"
+          autoComplete="email"
+          className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
           {...register("email")}
           placeholder="you@example.com"
         />
         {errors.email?.message && (
-          <p className="text-xs text-red-600">{errors.email.message}</p>
+          <p className="text-xs text-red-300">{errors.email.message}</p>
         )}
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold" htmlFor="password">
+        <label className="text-sm font-semibold text-white/95" htmlFor="password">
           Password
         </label>
         <div className="relative">
           <input
             id="password"
             type={showPassword ? "text" : "password"}
-            className="h-10 w-full rounded-md border-2 border-black/30 dark:border-white/35 bg-background px-3 pr-10 text-sm font-medium outline-none focus:border-foreground/60"
+            autoComplete="new-password"
+            className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
             {...register("password")}
             placeholder="••••••"
           />
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute inset-y-0 right-0 px-2 text-foreground/70 hover:text-foreground"
+            className="absolute inset-y-0 right-0 px-3 text-white/80 hover:text-white"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -102,26 +105,27 @@ export default function RegisterForm() {
           </button>
         </div>
         {errors.password?.message && (
-          <p className="text-xs text-red-600">{errors.password.message}</p>
+          <p className="text-xs text-red-300">{errors.password.message}</p>
         )}
       </div>
 
       <div className="space-y-1">
-        <label className="text-sm font-semibold" htmlFor="confirmPassword">
+        <label className="text-sm font-semibold text-white/95" htmlFor="confirmPassword">
           Confirm Password
         </label>
         <div className="relative">
           <input
             id="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
-            className="h-10 w-full rounded-md border-2 border-black/30 dark:border-white/35 bg-background px-3 pr-10 text-sm font-medium outline-none focus:border-foreground/60"
+            autoComplete="new-password"
+            className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
             {...register("confirmPassword")}
             placeholder="••••••"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword((prev) => !prev)}
-            className="absolute inset-y-0 right-0 px-2 text-foreground/70 hover:text-foreground"
+            className="absolute inset-y-0 right-0 px-3 text-white/80 hover:text-white"
             aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
           >
             {showConfirmPassword ? (
@@ -137,21 +141,25 @@ export default function RegisterForm() {
           </button>
         </div>
         {errors.confirmPassword?.message && (
-          <p className="text-xs text-red-600">{errors.confirmPassword.message}</p>
+          <p className="text-xs text-red-300">{errors.confirmPassword.message}</p>
         )}
       </div>
 
       <button
         type="submit"
         disabled={isSubmitting || pending}
-        className="h-10 w-full rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 disabled:opacity-60"
+        className="h-11 w-full rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold tracking-wide shadow-lg shadow-blue-500/35 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-60"
       >
         {isSubmitting || pending ? "Creating account..." : "Create account"}
       </button>
 
-      <div className="mt-1 text-center text-sm">
+      <p className="text-center text-xs text-white/70">
+        Strong protection • Quick onboarding
+      </p>
+
+      <div className="mt-1 text-center text-sm text-white/85">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold hover:underline">
+        <Link href="/login" className="font-semibold text-blue-300 hover:text-blue-200 hover:underline">
           Log in
         </Link>
       </div>
