@@ -7,8 +7,13 @@ export class PostController {
     // New Post
     addNewPost = async (req: Request, res: Response): Promise<void> => {
         try {
+            const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
+
             // Validate request body
-            const validatedData = createPostSchema.parse(req.body);
+            const validatedData = createPostSchema.parse({
+                ...req.body,
+                image: imagePath
+            });
             
             const user = await userModel.findOne({ _id: req.user!.userId });
             if (!user) {
@@ -21,7 +26,8 @@ export class PostController {
             const createdPost = await postModel.create({
                 user: user._id,
                 title: validatedData.title,
-                content: validatedData.content
+                content: validatedData.content,
+                image: validatedData.image || ""
             });
             user.posts.push(createdPost._id as any);
             await user.save();
@@ -43,7 +49,7 @@ export class PostController {
         try {
             const allPosts = await postModel
                 .find()
-                .populate("user", "name email profileImage")
+                .populate("user", "name profileImage")
                 .sort({ date: -1 });
             res.send({
                 message: "Posts fetched successfully!",
@@ -127,8 +133,13 @@ export class PostController {
     // Update Post By post id 
     updatePostById = async (req: Request, res: Response): Promise<void> => {
         try {
+            const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
+
             // Validate request body
-            const validatedData = updatePostSchema.parse(req.body);
+            const validatedData = updatePostSchema.parse({
+                ...req.body,
+                image: imagePath
+            });
 
             const existingPost = await postModel.findOne({ _id: req.params.id });
             if (!existingPost) {
@@ -139,17 +150,24 @@ export class PostController {
                 return;
             }
 
-            if (existingPost.user.toString() !== req.user!.userId) {
+            const isOwner = existingPost.user.toString() === req.user!.userId;
+            const isAdmin = req.user?.role === "admin";
+
+            if (!isOwner && !isAdmin) {
                 res.status(403).send({
-                    message: "You can only update your own posts",
+                    message: "You are not authorized to update this post",
                     success: false
                 });
                 return;
             }
             
             const updatedPost = await postModel.findOneAndUpdate(
-                { _id: req.params.id, user: req.user!.userId },
-                { content: validatedData.content }
+                { _id: req.params.id },
+                {
+                    ...(validatedData.title !== undefined ? { title: validatedData.title } : {}),
+                    content: validatedData.content,
+                    ...(validatedData.image ? { image: validatedData.image } : {})
+                }
             );
             if (!updatedPost) {
                 res.send({
@@ -182,7 +200,7 @@ export class PostController {
                     path: "posts",
                     populate: {
                         path: "user",
-                        select: "name email profileImage"
+                        select: "name profileImage"
                     }
                 });
             res.send({
@@ -210,18 +228,21 @@ export class PostController {
                 return;
             }
 
-            if (post.user.toString() !== req.user!.userId) {
+            const isOwner = post.user.toString() === req.user!.userId;
+            const isAdmin = req.user?.role === "admin";
+
+            if (!isOwner && !isAdmin) {
                 res.status(403).send({
-                    message: "You can only delete your own posts",
+                    message: "You are not authorized to delete this post",
                     success: false
                 });
                 return;
             }
 
-            await postModel.findOneAndDelete({ _id: req.params.id, user: req.user!.userId });
+            await postModel.findOneAndDelete({ _id: req.params.id });
 
             await userModel.findOneAndUpdate(
-                { _id: req.user!.userId },
+                { _id: post.user },
                 { $pull: { posts: req.params.id } }
             );
 
