@@ -11,9 +11,23 @@ export class AdminController {
             const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 100);
             const skip = (page - 1) * limit;
 
-            const [users, totalUsers] = await Promise.all([
+            const [users, totalUsers, postsAggregation] = await Promise.all([
                 userModel.find().select("-password").skip(skip).limit(limit).sort({ createdAt: -1 }),
-                userModel.countDocuments()
+                userModel.countDocuments(),
+                userModel.aggregate([
+                    {
+                        $group: {
+                            _id: null,
+                            totalPosts: {
+                                $sum: {
+                                    $size: {
+                                        $ifNull: ["$posts", []]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ])
             ]);
 
             const usersWithPostCount = users.map((user) => {
@@ -25,6 +39,7 @@ export class AdminController {
             });
 
             const totalPages = Math.max(Math.ceil(totalUsers / limit), 1);
+            const totalPosts = postsAggregation?.[0]?.totalPosts || 0;
 
             res.json({ 
                 success: true, 
@@ -33,6 +48,7 @@ export class AdminController {
                     page,
                     limit,
                     totalUsers,
+                    totalPosts,
                     totalPages,
                     hasNextPage: page < totalPages,
                     hasPrevPage: page > 1
