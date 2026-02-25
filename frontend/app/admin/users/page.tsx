@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/api/axios";
 import { useToast } from "@/lib/toast";
 import { buildProfileImageUrl } from "@/lib/user-session";
+import { useTheme } from "@/lib/theme";
 
 type UserRow = {
   _id: string;
@@ -26,6 +27,8 @@ type PaginationMeta = {
 };
 
 export default function AdminUsersPage() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const toast = useToast();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,10 +94,10 @@ export default function AdminUsersPage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="bg-slate-800/50 backdrop-blur-xl rounded-lg shadow-lg p-6 border border-white/10">
+    <div className="admin-users-page container mx-auto px-4 py-8 max-w-7xl">
+      <div className={`backdrop-blur-xl rounded-lg shadow-lg p-6 ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
         <div className="mb-6 flex items-start justify-between gap-4">
-          <h1 className="text-3xl font-bold text-white">Admin Users</h1>
+          <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Admin Users</h1>
 
           <div className="flex gap-3">
             <button
@@ -125,7 +128,7 @@ export default function AdminUsersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search current page users by name/email/role"
-            className="w-full md:w-96 px-3 py-2 rounded-md bg-slate-900/50 border border-white/15 text-white placeholder:text-slate-400"
+            className={`w-full md:w-96 px-3 py-2 rounded-md ${isDark ? "bg-slate-900/50 border border-white/15 text-white placeholder:text-slate-400" : "bg-white border border-black/15 text-slate-900 placeholder:text-slate-500"}`}
           />
         </div>
 
@@ -136,7 +139,7 @@ export default function AdminUsersPage() {
         )}
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-lg mb-4">
+          <div className={`px-4 py-3 rounded-lg mb-4 ${isDark ? "bg-red-500/10 border border-red-500/20 text-red-300" : "bg-red-500/10 border border-red-500/25 text-red-700"}`}>
             {error}
           </div>
         )}
@@ -145,26 +148,26 @@ export default function AdminUsersPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b-2 border-white/20">
-                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Email</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Role</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-300">Blogs</th>
-                  <th className="text-left py-3 px-4 font-semibold text-slate-300">ID</th>
-                  <th className="text-right py-3 px-4 font-semibold text-slate-300">Actions</th>
+                <tr className={isDark ? "border-b-2 border-white/20" : "border-b-2 border-black/15"}>
+                  <th className={`text-left py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>Name</th>
+                  <th className={`text-left py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>Email</th>
+                  <th className={`text-left py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>Role</th>
+                  <th className={`text-left py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>Blogs</th>
+                  <th className={`text-left py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>ID</th>
+                  <th className={`text-right py-3 px-4 font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>Actions</th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8 text-slate-400">
+                    <td colSpan={6} className={`text-center py-8 ${isDark ? "text-slate-400" : "text-slate-600"}`}>
                       No users found
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u._id} className="border-b border-white/10 hover:bg-slate-700/30">
+                    <tr key={u._id} className={isDark ? "border-b border-white/10 hover:bg-slate-700/30" : "border-b border-black/10 hover:bg-slate-100/70"}>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
@@ -178,10 +181,10 @@ export default function AdminUsersPage() {
                               <span>{u.name?.[0]?.toUpperCase() || "U"}</span>
                             )}
                           </div>
-                          <div className="font-medium text-white">{u.name ?? "-"}</div>
+                          <div className={`font-medium ${isDark ? "text-white" : "text-slate-900"}`}>{u.name ?? "-"}</div>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-slate-300">{u.email ?? "-"}</td>
+                      <td className={`py-3 px-4 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{u.email ?? "-"}</td>
                       <td className="py-3 px-4">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -193,10 +196,10 @@ export default function AdminUsersPage() {
                           {u.role ?? "-"}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-slate-200 font-semibold">
+                      <td className={`py-3 px-4 font-semibold ${isDark ? "text-slate-200" : "text-slate-800"}`}>
                         {u.postsCount ?? 0}
                       </td>
-                      <td className="py-3 px-4 text-slate-400 text-sm font-mono">
+                      <td className={`py-3 px-4 text-sm font-mono ${isDark ? "text-slate-400" : "text-slate-600"}`}>
                         {u._id.substring(0, 8)}...
                       </td>
                       <td className="py-3 px-4">
@@ -231,26 +234,26 @@ export default function AdminUsersPage() {
 
         {!loading && !error && users.length > 0 && (
           <>
-            <div className="mt-4 text-sm text-slate-300">
-              Showing <span className="font-semibold text-white">{users.length}</span> users on page{" "}
-              <span className="font-semibold text-white">{pagination.page}</span> of{" "}
-              <span className="font-semibold text-white">{pagination.totalPages}</span>
+            <div className={`mt-4 text-sm ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+              Showing <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{users.length}</span> users on page{" "}
+              <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{pagination.page}</span> of{" "}
+              <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{pagination.totalPages}</span>
               {" · "}
-              Total users: <span className="font-semibold text-white">{pagination.totalUsers}</span>
+              Total users: <span className={`font-semibold ${isDark ? "text-white" : "text-slate-900"}`}>{pagination.totalUsers}</span>
             </div>
 
             <div className="mt-4 flex items-center gap-3">
               <button
                 onClick={() => fetchUsers(pagination.page - 1)}
                 disabled={!pagination.hasPrevPage || loading}
-                className="px-3 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+                className={`px-3 py-2 rounded disabled:opacity-50 ${isDark ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-900"}`}
               >
                 Previous
               </button>
               <button
                 onClick={() => fetchUsers(pagination.page + 1)}
                 disabled={!pagination.hasNextPage || loading}
-                className="px-3 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+                className={`px-3 py-2 rounded disabled:opacity-50 ${isDark ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-900"}`}
               >
                 Next
               </button>
