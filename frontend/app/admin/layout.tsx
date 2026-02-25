@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
 import { useEffect, useState } from "react";
 import { profileApi } from "@/lib/api/profile";
@@ -13,6 +13,7 @@ import {
   onSessionUserUpdate,
   SessionUser,
 } from "@/lib/user-session";
+import { useTheme } from "@/lib/theme";
 
 type AdminUserStat = {
   _id: string;
@@ -26,6 +27,9 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const pathname = usePathname();
   const router = useRouter();
   const toast = useToast();
   const [user, setUser] = useState<SessionUser | null>(null);
@@ -97,17 +101,47 @@ export default function AdminLayout({
     router.push("/login");
   };
 
+  const navItemBaseClass = "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 group shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]";
+  const navItemInactiveClass = isDark
+    ? "border-white/20 bg-black/25 hover:bg-black/35 shadow-black/35"
+    : "border-black/15 bg-black/8 hover:bg-black/12 shadow-black/10";
+  const navItemActiveClass = isDark
+    ? "border-white/40 bg-white/14 text-white shadow-white/20"
+    : "border-black/20 bg-white/80 text-slate-900 shadow-slate-300/30";
+  const navItemClass = (active: boolean) =>
+    `${navItemBaseClass} ${active ? navItemActiveClass : navItemInactiveClass}`;
+
+  const isUserDetailRoute =
+    /^\/admin\/[^/]+(\/edit)?$/.test(pathname) &&
+    !pathname.startsWith("/admin/users") &&
+    pathname !== "/admin/blogs" &&
+    pathname !== "/admin/profile";
+
+  const usersSectionActive = pathname === "/admin/users" || isUserDetailRoute;
+
   return (
-    <div className="flex min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div
+      className={`flex min-h-screen ${
+        isDark
+          ? "bg-linear-to-br from-slate-900 via-purple-900 to-slate-900"
+          : "bg-linear-to-br from-slate-100 via-white to-slate-100"
+      }`}
+    >
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
+        <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-blue-500/10" : "bg-blue-500/20"}`}></div>
+        <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-purple-500/10" : "bg-purple-500/20"}`}></div>
+        <div className={`absolute top-1/2 left-1/2 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-indigo-500/10" : "bg-indigo-500/20"}`}></div>
       </div>
 
       {/* Sidebar */}
-      <aside className="relative w-64 bg-linear-to-b from-slate-800/50 to-slate-900/50 backdrop-blur-xl border-r border-white/10 text-white p-6">
+      <aside
+        className={`relative w-64 backdrop-blur-xl p-6 ${
+          isDark
+            ? "bg-linear-to-b from-slate-800/50 to-slate-900/50 border-r border-white/10 text-white"
+            : "bg-linear-to-b from-white/80 to-slate-100/80 border-r border-slate-300/70 text-slate-900"
+        }`}
+      >
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
@@ -120,12 +154,12 @@ export default function AdminLayout({
               Admin Panel
             </h2>
           </div>
-          <p className="text-xs text-slate-400">Management Dashboard</p>
+          <p className={`${isDark ? "text-slate-400" : "text-slate-500"} text-xs`}>Management Dashboard</p>
         </div>
 
         <Link
-          href="/profile"
-          className="mb-4 flex items-center gap-3 px-4 py-3 rounded-lg border border-white/10 bg-slate-900/40 hover:bg-white/10 transition-all duration-200"
+          href="/admin"
+          className={`mb-4 ${navItemClass(pathname === "/admin")}`}
         >
           <div className="w-10 h-10 rounded-full bg-slate-700 border border-white/15 overflow-hidden flex items-center justify-center text-sm font-semibold text-white">
             {user?.profileImage ? (
@@ -147,7 +181,7 @@ export default function AdminLayout({
         <nav className="space-y-2">
           <Link
             href="/profile"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+            className={navItemClass(pathname === "/profile")}
           >
             <div className="w-8 h-8 rounded-full bg-slate-700 border border-white/15 overflow-hidden flex items-center justify-center text-xs font-semibold text-white">
               {user?.profileImage ? (
@@ -168,42 +202,61 @@ export default function AdminLayout({
 
           <Link 
             href="/admin/users" 
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+            className={navItemClass(usersSectionActive)}
           >
-            <svg className="w-5 h-5 text-slate-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-slate-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
             <span className="font-medium">Users</span>
           </Link>
           <Link 
             href="/admin/users/create" 
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 group"
+            className={navItemClass(pathname === "/admin/users/create")}
           >
-            <svg className="w-5 h-5 text-slate-400 group-hover:text-purple-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-slate-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
             <span className="font-medium">Create User</span>
+          </Link>
+
+          <Link 
+            href="/admin/blogs" 
+            className={navItemClass(pathname === "/admin/blogs")}
+          >
+            <svg className="w-5 h-5 text-slate-400 group-hover:text-slate-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.483 9.246 5 7.5 5S4.168 5.483 3 6.253v13C4.168 18.483 5.754 18 7.5 18s3.332.483 4.5 1.253m0-13C13.168 5.483 14.754 5 16.5 5s3.332.483 4.5 1.253v13C19.832 18.483 18.246 18 16.5 18s-3.332.483-4.5 1.253" />
+            </svg>
+            <span className="font-medium">Blogs</span>
           </Link>
 
           <div className="pt-2">
             <button
               type="button"
               onClick={() => setShowBlogStats((prev) => !prev)}
-              className="w-full flex items-center justify-between gap-2 px-4 py-2 rounded-lg border border-white/10 bg-slate-900/40 hover:bg-white/10 transition-all duration-200"
+              className={`w-full flex items-center justify-between gap-2 px-4 py-2 rounded-xl border transition-all duration-200 shadow-lg hover:-translate-y-0.5 ${showBlogStats ? navItemActiveClass : navItemInactiveClass}`}
             >
-              <span className="text-sm font-semibold text-slate-200">Blogs Posted by User</span>
-              <span className="text-xs text-slate-300">{showBlogStats ? "▾" : "▸"}</span>
+              <span className={`text-sm font-semibold ${isDark ? "text-slate-200" : "text-slate-700"}`}>Blogs Posted by User</span>
+              <span className={`text-xs ${isDark ? "text-slate-300" : "text-slate-600"}`}>{showBlogStats ? "▾" : "▸"}</span>
             </button>
 
             {showBlogStats && (
-              <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-white/10 bg-slate-900/40 p-2 space-y-1">
+              <div className={`mt-2 max-h-48 overflow-y-auto rounded-lg p-2 space-y-1 ${
+                isDark
+                  ? "border border-white/10 bg-slate-900/40"
+                  : "border border-black/10 bg-white/75"
+              }`}>
                 {blogStats.length === 0 ? (
-                  <p className="px-2 py-2 text-xs text-slate-400">No user blog stats available.</p>
+                  <p className={`px-2 py-2 text-xs ${isDark ? "text-slate-400" : "text-slate-600"}`}>No user blog stats available.</p>
                 ) : (
                   blogStats.map((item) => (
-                    <div key={item._id} className="flex items-center justify-between rounded-md px-2 py-1.5 text-xs hover:bg-white/5">
-                      <span className="truncate pr-2 text-slate-300">{item.name}</span>
-                      <span className="font-semibold text-blue-300 whitespace-nowrap">{item.postsCount}</span>
+                    <div
+                      key={item._id}
+                      className={`flex items-center justify-between rounded-md px-2 py-1.5 text-xs ${
+                        isDark ? "hover:bg-white/5" : "hover:bg-black/5"
+                      }`}
+                    >
+                      <span className={`truncate pr-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{item.name}</span>
+                      <span className={`font-semibold whitespace-nowrap ${isDark ? "text-blue-300" : "text-blue-700"}`}>{item.postsCount}</span>
                     </div>
                   ))
                 )}
@@ -214,9 +267,15 @@ export default function AdminLayout({
 
         {/* Sidebar Footer */}
         <div className="absolute bottom-6 left-6 right-6">
-          <div className="bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-white/10 rounded-lg px-4 py-3">
-            <p className="text-xs text-slate-300 font-medium">Admin Access</p>
-            <p className="text-xs text-slate-500 mt-1">Full Control</p>
+          <div
+            className={`rounded-lg px-4 py-3 ${
+              isDark
+                ? "bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-white/10"
+                : "bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-black/10"
+            }`}
+          >
+            <p className={`text-xs font-medium ${isDark ? "text-slate-300" : "text-slate-700"}`}>Admin Access</p>
+            <p className={`text-xs mt-1 ${isDark ? "text-slate-500" : "text-slate-600"}`}>Full Control</p>
           </div>
 
           <button
