@@ -5,7 +5,7 @@ import { postApi, Post } from "@/lib/api/posts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
-import { buildProfileImageUrl } from "@/lib/user-session";
+import { buildPostImageUrl, buildProfileImageUrl } from "@/lib/user-session";
 
 const BLOG_TYPE_KEYWORDS: Record<string, string[]> = {
     Technology: ["tech", "ai", "software", "coding", "programming", "javascript", "typescript", "react", "node", "backend", "frontend", "database", "api"],
@@ -73,6 +73,7 @@ export default function BlogsPage() {
     const [showCreateForm, setShowCreateForm] = useState(false);
     const [newPostTitle, setNewPostTitle] = useState("");
     const [newPostContent, setNewPostContent] = useState("");
+    const [newPostImage, setNewPostImage] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
@@ -159,11 +160,12 @@ export default function BlogsPage() {
 
         try {
             setIsSubmitting(true);
-            const response = await postApi.createPost(trimmedTitle, trimmedContent);
+            const response = await postApi.createPost(trimmedTitle, trimmedContent, newPostImage);
             if (response.success) {
                 console.log("Post created successfully");
                 setNewPostTitle("");
                 setNewPostContent("");
+                setNewPostImage(null);
                 setShowCreateForm(false);
                 toast.success("Post created successfully!");
                 // Refresh posts to show the new post
@@ -280,7 +282,7 @@ export default function BlogsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-slate-950 text-white pt-24 px-4">
+            <div className="blogs-page min-h-screen bg-slate-950 text-white pt-24 px-4">
                 <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[60vh]">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
                 </div>
@@ -289,7 +291,7 @@ export default function BlogsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-100">
+        <div className="blogs-page min-h-screen bg-slate-950 text-slate-100">
             {/* Hero Section for Non-Authenticated Users */}
             {!isAuthenticated && (
                 <div className="bg-linear-to-r from-blue-700 to-purple-700 text-white py-12">
@@ -537,6 +539,19 @@ export default function BlogsPage() {
                                     {newPostContent.length} / 5000 characters
                                 </div>
                             </div>
+
+                            <div className="mb-4">
+                                <label htmlFor="post-image" className="block text-sm font-medium text-slate-200 mb-2">
+                                    Post Image (optional)
+                                </label>
+                                <input
+                                    id="post-image"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => setNewPostImage(e.target.files?.[0] || null)}
+                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
                             <div className="flex flex-wrap justify-end gap-3">
                                 <button
                                     type="button"
@@ -544,6 +559,7 @@ export default function BlogsPage() {
                                         setShowCreateForm(false);
                                         setNewPostTitle("");
                                         setNewPostContent("");
+                                        setNewPostImage(null);
                                     }}
                                     className="min-h-11 px-4 py-2 border border-white/20 text-slate-200 rounded-lg hover:bg-white/10 transition-colors"
                                 >
@@ -646,9 +662,6 @@ export default function BlogsPage() {
 
                                     return (
                                         <>
-                                <h3 className="text-xl font-semibold text-white mb-3">
-                                    {post.title || "Untitled"}
-                                </h3>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         {post.user?._id ? (
@@ -702,7 +715,18 @@ export default function BlogsPage() {
                                     </span>
                                 </div>
 
+                                <h3 className="text-xl font-semibold text-white mb-3">
+                                    {post.title || "Untitled"}
+                                </h3>
+
                                 <div className="mb-4">
+                                    {post.image && (
+                                        <img
+                                            src={buildPostImageUrl(post.image)}
+                                            alt={post.title || "Post image"}
+                                            className="mb-4 w-full max-h-96 object-cover rounded-lg border border-white/10"
+                                        />
+                                    )}
                                     <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base">
                                         {displayedContent}
                                     </p>
