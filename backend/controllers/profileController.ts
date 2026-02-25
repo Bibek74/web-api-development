@@ -25,7 +25,7 @@ export class ProfileController {
                 message: `Hi! ${user.name}, Welcome to your profile.`,
                 posts: user.posts,
                 result: {
-                    _id: user._id.toString(),
+                    _id: String(user._id),
                     name: user.name,
                     email: user.email,
                     role: user.role,
@@ -68,7 +68,7 @@ export class ProfileController {
             res.send({
                 message: "Profile Updated",
                 result: {
-                    _id: updateProfile._id.toString(),
+                    _id: String(updateProfile._id),
                     name: updateProfile.name,
                     email: updateProfile.email,
                     role: updateProfile.role,
@@ -169,7 +169,7 @@ export class ProfileController {
             res.send({
                 message: "Profile fetched successfully",
                 result: {
-                    _id: profile._id.toString(),
+                    _id: String(profile._id),
                     name: profile.name,
                     role: profile.role,
                     profileImage: profile.profileImage || ""
@@ -215,7 +215,7 @@ export class ProfileController {
             res.send({
                 message: "Profile image uploaded successfully",
                 result: {
-                    _id: updatedUser._id.toString(),
+                    _id: String(updatedUser._id),
                     name: updatedUser.name,
                     email: updatedUser.email,
                     role: updatedUser.role,
