@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { profileApi, PublicUserProfile } from "@/lib/api/profile";
 import { Post } from "@/lib/api/posts";
-import { buildProfileImageUrl } from "@/lib/user-session";
+import { buildPostImageUrl, buildProfileImageUrl } from "@/lib/user-session";
 
 export default function UserPublicProfilePage() {
   const params = useParams();
@@ -174,6 +174,13 @@ export default function UserPublicProfilePage() {
 
                     return (
                       <>
+                        {post.image && (
+                          <img
+                            src={buildPostImageUrl(post.image)}
+                            alt={post.title || "Post image"}
+                            className="mb-3 w-full max-h-96 rounded-lg border border-white/10 object-cover"
+                          />
+                        )}
                         <p className="whitespace-pre-wrap leading-relaxed text-slate-200">{displayedContent}</p>
                         {isLongPost && (
                           <button
