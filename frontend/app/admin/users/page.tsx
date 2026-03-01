@@ -95,14 +95,14 @@ export default function AdminUsersPage() {
 
   return (
     <div className="admin-users-page container mx-auto px-4 py-8 max-w-7xl">
-      <div className={`backdrop-blur-xl rounded-lg shadow-lg p-6 ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
+      <div className={`backdrop-blur-xl rounded-2xl shadow-lg p-6 ${isDark ? "bg-zinc-900/65 border border-white/10 shadow-black/40" : "bg-white/85 border border-black/10"}`}>
         <div className="mb-6 flex items-start justify-between gap-4">
           <h1 className={`text-3xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Admin Users</h1>
 
           <div className="flex gap-3">
             <button
               onClick={() => fetchUsers(pagination.page)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${isDark ? "bg-zinc-800 text-slate-100 border border-white/15 hover:bg-zinc-700" : "bg-blue-600 text-white hover:bg-blue-700"}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -112,7 +112,7 @@ export default function AdminUsersPage() {
 
             <Link
               href="/admin/users/create"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${isDark ? "bg-amber-300 text-slate-950 hover:bg-amber-200 shadow-lg shadow-amber-900/20" : "bg-green-600 text-white hover:bg-green-700"}`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -128,13 +128,13 @@ export default function AdminUsersPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search current page users by name/email/role"
-            className={`w-full md:w-96 px-3 py-2 rounded-md ${isDark ? "bg-slate-900/50 border border-white/15 text-white placeholder:text-slate-400" : "bg-white border border-black/15 text-slate-900 placeholder:text-slate-500"}`}
+            className={`w-full md:w-96 px-3 py-2 rounded-lg ${isDark ? "bg-black/50 border border-white/15 text-white placeholder:text-slate-400 focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200" : "bg-white border border-black/15 text-slate-900 placeholder:text-slate-500"}`}
           />
         </div>
 
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300"></div>
           </div>
         )}
 
@@ -167,10 +167,10 @@ export default function AdminUsersPage() {
                   </tr>
                 ) : (
                   filteredUsers.map((u) => (
-                    <tr key={u._id} className={isDark ? "border-b border-white/10 hover:bg-slate-700/30" : "border-b border-black/10 hover:bg-slate-100/70"}>
+                    <tr key={u._id} className={isDark ? "border-b border-white/10 hover:bg-zinc-800/40" : "border-b border-black/10 hover:bg-slate-100/70"}>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-9 w-9 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold">
+                          <div className="h-9 w-9 rounded-full overflow-hidden bg-linear-to-br from-zinc-700 to-zinc-900 ring-1 ring-amber-200/30 flex items-center justify-center text-amber-100 text-sm font-semibold">
                             {u.profileImage ? (
                               <img
                                 src={buildProfileImageUrl(u.profileImage)}
@@ -189,8 +189,8 @@ export default function AdminUsersPage() {
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
                             u.role === "admin"
-                              ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                              : "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                              ? "bg-amber-200/10 text-amber-100 border border-amber-200/30"
+                              : "bg-zinc-700/40 text-slate-200 border border-white/20"
                           }`}
                         >
                           {u.role ?? "-"}
@@ -206,13 +206,13 @@ export default function AdminUsersPage() {
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/admin/${u._id}`}
-                            className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                            className={`px-3 py-1 rounded transition-colors text-sm ${isDark ? "bg-zinc-700 text-slate-100 hover:bg-zinc-600" : "bg-blue-600 text-white hover:bg-blue-700"}`}
                           >
                             View
                           </Link>
                           <Link
                             href={`/admin/${u._id}/edit`}
-                            className="px-3 py-1 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm"
+                            className={`px-3 py-1 rounded transition-colors text-sm ${isDark ? "bg-amber-300 text-slate-950 hover:bg-amber-200" : "bg-yellow-600 text-white hover:bg-yellow-700"}`}
                           >
                             Edit
                           </Link>
@@ -246,14 +246,14 @@ export default function AdminUsersPage() {
               <button
                 onClick={() => fetchUsers(pagination.page - 1)}
                 disabled={!pagination.hasPrevPage || loading}
-                className={`px-3 py-2 rounded disabled:opacity-50 ${isDark ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-900"}`}
+                className={`px-3 py-2 rounded-lg disabled:opacity-50 ${isDark ? "bg-zinc-800 border border-white/15 text-slate-100" : "bg-slate-200 text-slate-900"}`}
               >
                 Previous
               </button>
               <button
                 onClick={() => fetchUsers(pagination.page + 1)}
                 disabled={!pagination.hasNextPage || loading}
-                className={`px-3 py-2 rounded disabled:opacity-50 ${isDark ? "bg-slate-700 text-white" : "bg-slate-200 text-slate-900"}`}
+                className={`px-3 py-2 rounded-lg disabled:opacity-50 ${isDark ? "bg-zinc-800 border border-white/15 text-slate-100" : "bg-slate-200 text-slate-900"}`}
               >
                 Next
               </button>
