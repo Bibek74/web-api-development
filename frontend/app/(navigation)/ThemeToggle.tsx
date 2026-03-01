@@ -13,7 +13,7 @@ export default function ThemeToggle() {
       onClick={toggleTheme}
       className={`fixed bottom-5 right-5 z-100 h-12 w-12 rounded-full shadow-lg backdrop-blur-md transition-colors inline-flex items-center justify-center ${
         isDark
-          ? "border border-white/20 bg-slate-900/80 text-white hover:bg-slate-800"
+          ? "border border-amber-100/35 bg-zinc-900/80 text-amber-100 hover:bg-amber-200 hover:text-slate-950 shadow-amber-900/20"
           : "border border-slate-300/80 bg-white/90 text-slate-900 hover:bg-slate-100"
       }`}
       title={mounted ? `Switch to ${isDark ? "light" : "dark"} mode` : "Toggle theme"}
