@@ -45,13 +45,18 @@ export class AuthController {
     // Register Account
     signupUser = async (req: Request, res: Response): Promise<void> => {
         try {
+            const mappedBody = {
+                ...req.body,
+                name: req.body?.name || `${req.body?.firstname || ""} ${req.body?.lastname || ""}`.trim()
+            };
+
             // Validate request body
-            const validatedData = signupSchema.parse(req.body);
+            const validatedData = signupSchema.parse(mappedBody);
             
             // Check if a user with the provided email already exists in the database
             const user = await userModel.findOne({ email: validatedData.email });
             if (user) {
-                res.send({ message: "Email already exists!", success: false });
+                res.status(409).send({ message: "Email already exists!", success: false });
             } else {
                 bcrypt.genSalt(10, (err, salt) => {
                     bcrypt.hash(validatedData.password, salt, async (err, hash) => {
@@ -61,12 +66,12 @@ export class AuthController {
                             password: hash,
                             role: validatedData.role || "user"
                         });
-                        res.send({ message: "User registered successfully!", success: true });
+                        res.status(201).send({ message: "User Created", success: true });
                     });
                 });
             }
         } catch (err) {
-            res.send({
+            res.status(400).send({
                 message: (err as Error).message ?? "Unknown error",
                 success: false
             });
@@ -82,7 +87,7 @@ export class AuthController {
             // Check if a user with the provided email exists in the database
             const user = await userModel.findOne({ email: validatedData.email });
             if (!user) {
-                res.send({ message: "Invalid credentials!", success: false });
+                res.status(404).send({ message: "Invalid credentials!", success: false });
                 return;
             }
 
@@ -119,13 +124,13 @@ export class AuthController {
                     }
                 });
             } else {
-                res.send({
+                res.status(401).send({
                     message: "Invalid credentials!",
                     success: false
                 });
             }
         } catch (err) {
-            res.send({
+            res.status(400).send({
                 message: (err as Error).message ?? "Unknown error",
                 success: false
             });
