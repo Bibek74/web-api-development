@@ -123,9 +123,9 @@ export default function AdminUserEditPage() {
 
   if (!id) {
     return (
-      <div className="admin-user-edit-page min-h-screen p-6 flex items-center justify-center">
-        <div className={`backdrop-blur-xl rounded-xl shadow-md p-8 text-center ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <div className="container mx-auto max-w-7xl px-4 py-8 flex items-center justify-center">
+        <div className={`backdrop-blur-xl rounded-2xl shadow-lg p-8 text-center ${isDark ? "bg-zinc-900/65 border border-white/10 shadow-black/40" : "bg-white/85 border border-black/10"}`}>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300 mx-auto"></div>
           <p className={`mt-4 ${isDark ? "text-slate-300" : "text-slate-700"}`}>Loading route params...</p>
         </div>
       </div>
@@ -134,9 +134,9 @@ export default function AdminUserEditPage() {
 
   if (loading) {
     return (
-      <div className="admin-user-edit-page min-h-screen p-6 flex items-center justify-center">
-        <div className={`backdrop-blur-xl rounded-xl shadow-md p-8 text-center ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+      <div className="container mx-auto max-w-7xl px-4 py-8 flex items-center justify-center">
+        <div className={`backdrop-blur-xl rounded-2xl shadow-lg p-8 text-center ${isDark ? "bg-zinc-900/65 border border-white/10 shadow-black/40" : "bg-white/85 border border-black/10"}`}>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300 mx-auto"></div>
           <p className={`mt-4 ${isDark ? "text-slate-300" : "text-slate-700"}`}>Loading user details...</p>
         </div>
       </div>
@@ -145,17 +145,17 @@ export default function AdminUserEditPage() {
 
   if (error) {
     return (
-      <div className="admin-user-edit-page min-h-screen p-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <div className={`rounded-xl p-8 ${isDark ? "bg-red-500/10 border border-red-500/20 text-red-300" : "bg-red-500/10 border border-red-500/25 text-red-700"}`}>
             <div className="flex items-start gap-3 mb-4">
-              <svg className="w-8 h-8 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <h3 className="font-bold text-red-300 text-lg">Error Loading User</h3>
-                <p className="text-red-400 mt-1">User ID: {id}</p>
-                <p className="text-red-400 mt-2">{error}</p>
+                <h3 className="font-bold text-lg">Error Loading User</h3>
+                <p className="mt-1">User ID: {id}</p>
+                <p className="mt-2">{error}</p>
               </div>
             </div>
             <button
@@ -172,8 +172,8 @@ export default function AdminUserEditPage() {
 
   if (!user) {
     return (
-      <div className="admin-user-edit-page min-h-screen p-6 flex items-center justify-center">
-        <div className={`backdrop-blur-xl rounded-xl shadow-md p-8 text-center ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
+      <div className="container mx-auto max-w-7xl px-4 py-8 flex items-center justify-center">
+        <div className={`backdrop-blur-xl rounded-xl shadow-lg p-8 text-center ${isDark ? "bg-zinc-900/65 border border-white/10" : "bg-white/85 border border-black/10"}`}>
           <svg className="w-16 h-16 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
@@ -184,12 +184,24 @@ export default function AdminUserEditPage() {
   }
 
   return (
-    <div className="admin-user-edit-page min-h-screen p-6">
+    <div className="container mx-auto max-w-7xl px-4 py-8">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={() => router.push("/admin/users")}
+            className={`px-3 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${isDark ? "bg-zinc-800 border border-white/15 text-slate-100 hover:bg-zinc-700" : "bg-white border border-black/15 text-slate-700 hover:bg-slate-100"}`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Users
+          </button>
+        </div>
+
         <div className="mb-6">
           <h1 className={`text-3xl font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-            <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             Edit User
@@ -198,25 +210,21 @@ export default function AdminUserEditPage() {
           <p className={`text-sm mt-1 font-mono ${isDark ? "text-slate-400" : "text-slate-500"}`}>ID: {id}</p>
         </div>
 
-        {/* Form Card */}
-        <div className={`backdrop-blur-xl rounded-xl shadow-lg overflow-hidden ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
-          {/* User Header */}
-          <div className="bg-linear-to-r from-blue-600 to-purple-600 p-6 text-white">
+        <div className={`backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden ${isDark ? "bg-zinc-900/65 border border-white/10 shadow-black/40" : "bg-white/85 border border-black/10"}`}>
+          <div className={`p-6 ${isDark ? "bg-zinc-900/85 border-b border-white/10" : "bg-slate-50 border-b border-black/10"}`}>
             <div className="flex items-center gap-3">
-              <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-2xl font-bold ring-4 ring-white/30">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold ring-2 ${isDark ? "bg-zinc-900 text-amber-100 ring-amber-200/30" : "bg-slate-100 text-slate-800 ring-black/10"}`}>
                 {user.name?.[0]?.toUpperCase() || "U"}
               </div>
               <div>
-                <h2 className="text-xl font-bold">Editing: {user.name}</h2>
-                <p className="text-blue-100 text-sm">{user.email}</p>
+                <h2 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>Editing: {user.name}</h2>
+                <p className={`${isDark ? "text-slate-300" : "text-slate-600"} text-sm`}>{user.email}</p>
               </div>
             </div>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-6">
-              {/* Name Input */}
               <div>
                 <label htmlFor="name" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   Full Name <span className="text-red-500">*</span>
@@ -231,14 +239,13 @@ export default function AdminUserEditPage() {
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all ${isDark ? "bg-black/50 border border-white/15 text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/60"}`}
                     placeholder="Enter full name"
                     required
                   />
                 </div>
               </div>
 
-              {/* Email Input */}
               <div>
                 <label htmlFor="email" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   Email Address <span className="text-red-500">*</span>
@@ -254,14 +261,13 @@ export default function AdminUserEditPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all ${isDark ? "bg-black/50 border border-white/15 text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/60"}`}
                     placeholder="user@example.com"
                     required
                   />
                 </div>
               </div>
 
-              {/* Role Select */}
               <div>
                 <label htmlFor="role" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   User Role
@@ -276,7 +282,7 @@ export default function AdminUserEditPage() {
                     id="role"
                     value={role}
                     onChange={(e) => setRole(e.target.value as "user" | "admin")}
-                    className={`w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all appearance-none ${isDark ? "bg-slate-900/50 border border-white/10 text-white" : "bg-white border border-black/15 text-slate-900"}`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all appearance-none ${isDark ? "bg-black/50 border border-white/15 text-white focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200" : "bg-white border border-black/15 text-slate-900 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/60"}`}
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
@@ -289,7 +295,6 @@ export default function AdminUserEditPage() {
                 </div>
               </div>
 
-              {/* Password Input */}
               <div>
                 <label htmlFor="password" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   New Password <span className={`${isDark ? "text-slate-500" : "text-slate-500"} font-normal`}>(Optional)</span>
@@ -305,28 +310,27 @@ export default function AdminUserEditPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all ${isDark ? "bg-slate-900/50 border border-white/10 text-white placeholder-slate-500" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500"}`}
+                    className={`w-full pl-10 pr-4 py-3 rounded-lg transition-all ${isDark ? "bg-black/50 border border-white/15 text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200" : "bg-white border border-black/15 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/60"}`}
                     placeholder="Leave blank to keep current password"
                   />
                 </div>
                 <p className={`text-xs mt-1 ${isDark ? "text-slate-400" : "text-slate-500"}`}>Only fill this if you want to change the password</p>
               </div>
 
-              {/* Image Upload */}
               <div>
                 <label htmlFor="image" className={`block text-sm font-semibold mb-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>
                   Profile Image <span className={`${isDark ? "text-slate-500" : "text-slate-500"} font-normal`}>(Optional)</span>
                 </label>
-                <div className={`border-2 border-dashed rounded-lg p-4 hover:border-blue-400 transition-colors ${isDark ? "border-white/20 bg-slate-900/30" : "border-black/15 bg-slate-50"}`}>
+                <div className={`border-2 border-dashed rounded-lg p-4 transition-colors ${isDark ? "border-white/20 bg-black/40 hover:border-amber-200/40" : "border-black/15 bg-slate-50 hover:border-blue-400"}`}>
                   <input
                     id="image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                    className={`w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 ${isDark ? "text-slate-300" : "text-slate-700"}`}
+                    className={`w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold ${isDark ? "text-slate-300 file:bg-amber-300 file:text-slate-950 hover:file:bg-amber-200" : "text-slate-700 file:bg-blue-600 file:text-white hover:file:bg-blue-700"}`}
                   />
                   {image && (
-                    <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
+                    <p className={`text-sm mt-2 flex items-center gap-1 ${isDark ? "text-amber-200" : "text-blue-600"}`}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
@@ -336,22 +340,20 @@ export default function AdminUserEditPage() {
                 </div>
               </div>
 
-              {/* Error Message */}
               {error && (
-                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
-                  <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className={`rounded-lg p-4 flex items-start gap-3 ${isDark ? "bg-red-500/10 border border-red-500/20 text-red-300" : "bg-red-500/10 border border-red-500/25 text-red-700"}`}>
+                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <p className="text-red-300 text-sm">{error}</p>
+                  <p className="text-sm">{error}</p>
                 </div>
               )}
 
-              {/* Action Buttons */}
               <div className={`flex flex-col sm:flex-row gap-3 pt-4 ${isDark ? "border-t border-white/10" : "border-t border-black/10"}`}>
                 <button
                   type="button"
                   onClick={() => router.push(`/admin/${id}`)}
-                  className={`px-6 py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 ${isDark ? "border border-white/20 text-slate-300 hover:bg-slate-700/50" : "border border-black/15 text-slate-700 hover:bg-slate-100"}`}
+                  className={`px-6 py-3 rounded-lg transition-colors font-medium flex items-center justify-center gap-2 ${isDark ? "border border-white/20 text-slate-300 hover:bg-zinc-800" : "border border-black/15 text-slate-700 hover:bg-slate-100"}`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -362,7 +364,7 @@ export default function AdminUserEditPage() {
                 <button
                   type="submit"
                   disabled={saving || !hasChanges}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2 shadow-md"
+                  className={`flex-1 px-6 py-3 rounded-lg disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2 shadow-md ${isDark ? "bg-amber-300 text-slate-950 hover:bg-amber-200 disabled:bg-zinc-600" : "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400"}`}
                 >
                   {saving ? (
                     <>
