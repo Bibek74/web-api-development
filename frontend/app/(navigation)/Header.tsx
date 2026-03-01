@@ -80,40 +80,42 @@ export default function Header() {
 
   const headerSurfaceClass = isScrolled
     ? isDark
-      ? "border-b border-white/10 bg-slate-900/85 shadow-lg backdrop-blur-xl"
+      ? "border-b border-white/10 bg-black/80 shadow-lg backdrop-blur-xl"
       : "border-b border-slate-300/70 bg-white/90 shadow-sm backdrop-blur-xl"
     : "bg-transparent";
 
   const navContainerClass = isDark
-    ? "border border-white/15 bg-white/10 text-white/80"
+    ? "border border-white/15 bg-zinc-900/75 text-white/80"
     : "border border-slate-300/70 bg-white/85 text-slate-700";
 
   const profileChipClass = isDark
-    ? "border border-white/15 bg-white/10 text-white hover:bg-white/20"
+    ? "border border-amber-100/30 bg-zinc-900/70 text-amber-100 hover:bg-amber-200 hover:text-slate-950"
     : "border border-slate-300/70 bg-white/85 text-slate-800 hover:bg-slate-100";
 
   const secondaryButtonClass = isDark
-    ? "border border-white/15 bg-white/10 text-white hover:bg-white/20"
+    ? "border border-white/15 bg-zinc-900/70 text-slate-100 hover:bg-zinc-800"
     : "border border-slate-300/70 bg-white/85 text-slate-800 hover:bg-slate-100";
 
-  const primaryButtonClass = "border border-blue-600 bg-blue-600 text-white hover:bg-blue-700";
+  const primaryButtonClass = isDark
+    ? "border border-amber-200 bg-amber-300 text-slate-950 hover:bg-amber-200"
+    : "border border-blue-600 bg-blue-600 text-white hover:bg-blue-700";
 
   const mobilePanelClass = isDark
-    ? "border border-white/10 bg-slate-900/95"
+    ? "border border-white/10 bg-zinc-950/95"
     : "border border-slate-300/70 bg-white/95";
 
   const mobileLinkClass = isDark
-    ? "border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+    ? "border border-white/10 bg-zinc-900/70 text-slate-100 hover:bg-zinc-800"
     : "border border-slate-300/70 bg-slate-50 text-slate-800 hover:bg-slate-100";
 
   const navTextClass = (href: string) => {
     if (isDark) {
-      return isActive(href) ? "text-white" : "text-white/75 hover:text-white";
+      return isActive(href) ? "text-amber-100" : "text-slate-300 hover:text-white";
     }
     return isActive(href) ? "text-slate-900" : "text-slate-600 hover:text-slate-900";
   };
 
-  const activeDotClass = isDark ? "bg-white" : "bg-slate-900";
+  const activeDotClass = isDark ? "bg-amber-200" : "bg-slate-900";
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${headerSurfaceClass}`}>
@@ -216,14 +218,14 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-lg px-3 py-2 text-sm font-semibold tracking-wide transition-colors ${mobileLinkClass} ${isActive(item.href) ? "ring-2 ring-blue-500/60" : ""}`}
+                  className={`rounded-lg px-3 py-2 text-sm font-semibold tracking-wide transition-colors ${mobileLinkClass} ${isActive(item.href) ? (isDark ? "ring-2 ring-amber-200/60" : "ring-2 ring-blue-500/60") : ""}`}
                 >
                   {item.label}
                 </Link>
               ))}
             </nav>
 
-            <div className="mt-3 border-t border-white/10 pt-3 flex flex-col gap-2">
+            <div className={`mt-3 pt-3 flex flex-col gap-2 ${isDark ? "border-t border-white/10" : "border-t border-slate-300/70"}`}>
               {isLoggedIn ? (
                 <>
                   <Link href={profileHref} className={`rounded-lg px-3 py-2 text-sm font-semibold tracking-wide transition-colors ${mobileLinkClass}`}>
