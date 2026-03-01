@@ -108,23 +108,23 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       </div>
 
       {confirmState.open && (
-        <div className="fixed inset-0 z-9998 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl border border-white/15 bg-slate-900 p-5 shadow-2xl">
-            <h3 className="text-lg font-semibold text-white">{confirmState.title}</h3>
-            <p className="mt-2 text-sm text-slate-300">{confirmState.message}</p>
+        <div className="fixed inset-0 z-9998 flex items-center justify-center bg-black/65 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/65 backdrop-blur-xl p-6 shadow-lg shadow-black/40">
+            <h3 className="text-2xl font-bold text-white tracking-tight">{confirmState.title}</h3>
+            <p className="mt-2 text-base text-slate-300">{confirmState.message}</p>
 
             <div className="mt-5 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={() => closeConfirm(false)}
-                className="min-h-10 px-4 py-2 rounded-lg border border-white/20 text-slate-200 hover:bg-white/10 transition-colors"
+                className="min-h-11 px-5 py-2 rounded-lg border border-white/20 text-slate-200 hover:bg-white/10 transition-colors font-semibold"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => closeConfirm(true)}
-                className="min-h-10 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+                className="min-h-11 px-5 py-2 rounded-lg bg-amber-300 text-slate-950 hover:bg-amber-200 transition-colors font-semibold"
               >
                 Confirm
               </button>
