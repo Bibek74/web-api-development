@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -48,70 +49,86 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden grid place-items-center p-4">
-      <section className="w-full max-w-md rounded-xl border border-white/15 bg-black/40 backdrop-blur p-6 text-white">
-        <h1 className="text-2xl font-bold">Reset Password</h1>
-        <p className="text-sm text-white/70 mt-1 mb-6">Set your new password.</p>
+    <main className="relative h-screen w-screen overflow-hidden">
+      <Image
+        src="/img 4.png"
+        alt="Reset password background"
+        fill
+        priority
+        className="object-cover"
+      />
 
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-xs font-medium" htmlFor="token">Reset token</label>
-            <input
-              id="token"
-              type="text"
-              required
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              className="h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 text-sm text-white outline-none placeholder-white/60 focus:border-white/50 focus:bg-white/20"
-              placeholder="Paste reset token"
-            />
+      <div className="absolute inset-0 bg-black/65" />
+      <div className="absolute inset-0 bg-linear-to-br from-blue-900/35 via-transparent to-purple-900/35" />
+
+      <div className="relative h-full grid place-items-center p-4 pt-20">
+        <section className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/65 backdrop-blur-xl p-8 text-white shadow-lg shadow-black/40">
+          <p className="mb-3 inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90">
+            Security
+          </p>
+          <h1 className="text-3xl font-extrabold tracking-tight">Reset password</h1>
+          <p className="text-sm font-medium text-white/85 mt-1 mb-6">Set your new password.</p>
+
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-white/95" htmlFor="token">Reset token</label>
+              <input
+                id="token"
+                type="text"
+                required
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
+                placeholder="Paste reset token"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-white/95" htmlFor="new_password">New password</label>
+              <input
+                id="new_password"
+                type="password"
+                required
+                minLength={6}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
+                placeholder="••••••"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-white/95" htmlFor="confirm_password">Confirm password</label>
+              <input
+                id="confirm_password"
+                type="password"
+                required
+                minLength={6}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
+                placeholder="••••••"
+              />
+            </div>
+
+            {message && (
+              <p className={`text-xs ${success ? "text-green-300" : "text-red-300"}`}>{message}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="h-11 w-full rounded-lg bg-amber-300 text-slate-950 text-sm font-semibold hover:bg-amber-200 disabled:opacity-60"
+            >
+              {loading ? "Resetting..." : "Reset password"}
+            </button>
+          </form>
+
+          <div className="mt-4 text-center text-sm text-white/85">
+            <Link href="/login" className="font-semibold text-amber-200 hover:text-amber-100 hover:underline">Back to login</Link>
           </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-medium" htmlFor="new_password">New password</label>
-            <input
-              id="new_password"
-              type="password"
-              required
-              minLength={6}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 text-sm text-white outline-none placeholder-white/60 focus:border-white/50 focus:bg-white/20"
-              placeholder="••••••"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-xs font-medium" htmlFor="confirm_password">Confirm password</label>
-            <input
-              id="confirm_password"
-              type="password"
-              required
-              minLength={6}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="h-10 w-full rounded-md border border-white/30 bg-white/10 px-3 text-sm text-white outline-none placeholder-white/60 focus:border-white/50 focus:bg-white/20"
-              placeholder="••••••"
-            />
-          </div>
-
-          {message && (
-            <p className={`text-xs ${success ? "text-green-300" : "text-red-300"}`}>{message}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="h-10 w-full rounded-md bg-foreground text-background text-sm font-semibold hover:opacity-90 disabled:opacity-60"
-          >
-            {loading ? "Resetting..." : "Reset password"}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center text-xs">
-          <Link href="/login" className="font-semibold hover:underline">Back to login</Link>
-        </div>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
