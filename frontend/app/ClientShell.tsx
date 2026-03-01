@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import Header from "./(navigation)/Header";
 import Footer from "./(navigation)/Footer";
 import { ToastProvider } from "@/lib/toast";
 import ThemeToggle from "./(navigation)/ThemeToggle";
-import { getSessionUser } from "@/lib/user-session";
+import { getSessionUser, onSessionUserUpdate, SessionUser } from "@/lib/user-session";
 
 export default function ClientShell({
   children,
@@ -13,11 +14,34 @@ export default function ClientShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const sessionUser = getSessionUser();
-  const hideProfileHeaderForAdmin = pathname === "/profile" && sessionUser?.role === "admin";
+  const [sessionUser, setSessionUser] = useState<SessionUser | null>(null);
 
-  const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs" || hideProfileHeaderForAdmin;
-  const hideFooter = pathname.startsWith("/admin");
+  useEffect(() => {
+    const syncUser = () => {
+      setSessionUser(getSessionUser());
+    };
+
+    syncUser();
+    const cleanup = onSessionUserUpdate(syncUser);
+    window.addEventListener("focus", syncUser);
+
+    return () => {
+      cleanup();
+      window.removeEventListener("focus", syncUser);
+    };
+  }, []);
+
+  const hideProfileHeaderForAdmin = pathname === "/profile" && sessionUser?.role === "admin";
+  const isAuthRoute =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password" ||
+    pathname === "/logout";
+
+  const hideHeader = pathname.startsWith("/admin") || pathname === "/blogs" || hideProfileHeaderForAdmin || isAuthRoute;
+  const hideFooter = pathname.startsWith("/admin") || isAuthRoute;
+  const hideThemeToggle = isAuthRoute;
 
   return (
     <ToastProvider>
@@ -30,7 +54,7 @@ export default function ClientShell({
         </>
       )}
       {!hideFooter && <Footer />}
-      <ThemeToggle />
+      {!hideThemeToggle && <ThemeToggle />}
     </ToastProvider>
   );
 }
