@@ -18,7 +18,7 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-linear-to-br from-blue-900/40 via-transparent to-purple-900/30" />
 
       <div className="relative h-full grid place-items-center p-4 pt-20">
-        <section className="w-full max-w-md rounded-2xl border border-white/30 bg-black/45 backdrop-blur-xl p-8 text-white shadow-2xl shadow-black/40">
+        <section className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-900/65 backdrop-blur-xl p-8 text-white shadow-lg shadow-black/40">
           <p className="mb-3 inline-flex rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90">
             Blogify Access
           </p>
