@@ -65,25 +65,24 @@ export default function AdminUserByIdPage() {
   }, [id]);
 
   return (
-    <div className="admin-user-page min-h-screen p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <div className="container mx-auto max-w-7xl px-4 py-8">
+      <div className={`backdrop-blur-xl rounded-2xl shadow-lg p-6 ${isDark ? "bg-zinc-900/65 border border-white/10 shadow-black/40" : "bg-white/85 border border-black/10"}`}>
+        <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className={`text-3xl font-bold flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-              <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               User Details
             </h1>
             <p className={`mt-1 ${isDark ? "text-slate-300" : "text-slate-600"}`}>View and manage user information</p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {id && !loading && user && (
               <>
                 <Link 
                   href={`/admin/${id}/edit`} 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-md font-medium"
+                  className={`px-3 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${isDark ? "bg-amber-300 text-slate-950 hover:bg-amber-200" : "bg-blue-600 text-white hover:bg-blue-700"}`}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -93,7 +92,7 @@ export default function AdminUserByIdPage() {
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2 shadow-md font-medium"
+                  className="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -103,45 +102,41 @@ export default function AdminUserByIdPage() {
               </>
             )}
             <Link 
-              href="/admin"
-              className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 shadow-sm font-medium ${isDark ? "bg-slate-700/50 border border-white/20 text-slate-300 hover:bg-slate-600/50" : "bg-white border border-black/15 text-slate-700 hover:bg-slate-100"}`}
+              href="/admin/users"
+              className={`px-3 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 ${isDark ? "bg-zinc-800 border border-white/15 text-slate-100 hover:bg-zinc-700" : "bg-white border border-black/15 text-slate-700 hover:bg-slate-100"}`}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to Admin Panel
+              Back to Users
             </Link>
           </div>
         </div>
 
-        {/* Loading State */}
         {loading && (
-          <div className={`backdrop-blur-xl rounded-xl shadow-md p-12 text-center ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+          <div className={`rounded-2xl border p-12 text-center ${isDark ? "border-white/10 bg-zinc-900/70" : "border-black/10 bg-white/85"}`}>
+            <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300 mx-auto"></div>
             <p className={`mt-4 ${isDark ? "text-slate-300" : "text-slate-700"}`}>Loading user details...</p>
           </div>
         )}
 
-        {/* Error State */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6 flex items-start gap-3">
-            <svg className="w-6 h-6 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className={`rounded-xl border p-4 flex items-start gap-3 ${isDark ? "border-red-500/20 bg-red-500/10 text-red-300" : "border-red-500/25 bg-red-500/10 text-red-700"}`}>
+            <svg className="w-6 h-6 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="font-semibold text-red-300">Error Loading User</h3>
-              <p className="text-red-400 mt-1">{error}</p>
+              <h3 className="font-semibold">Error Loading User</h3>
+              <p className="mt-1">{error}</p>
             </div>
           </div>
         )}
 
-        {/* User Details Card */}
         {!loading && !error && user && (
-          <div className={`backdrop-blur-xl rounded-xl shadow-lg overflow-hidden ${isDark ? "bg-slate-800/50 border border-white/10" : "bg-white/85 border border-black/10"}`}>
-            {/* User Header with Avatar */}
-            <div className="bg-linear-to-r from-blue-600 to-purple-600 p-8 text-white">
+          <div className={`rounded-2xl border overflow-hidden ${isDark ? "border-white/10 bg-zinc-900/70" : "border-black/10 bg-white/85"}`}>
+            <div className={`p-6 ${isDark ? "border-b border-white/10 bg-zinc-900/85" : "border-b border-black/10 bg-slate-50"}`}>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold ring-4 ring-white/30 overflow-hidden">
+                <div className="w-20 h-20 rounded-full bg-linear-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-3xl font-bold ring-2 ring-amber-200/30 overflow-hidden text-amber-100">
                   {user.profileImage ? (
                     <img
                       src={buildProfileImageUrl(user.profileImage)}
@@ -153,20 +148,14 @@ export default function AdminUserByIdPage() {
                   )}
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold">{user.name || "Unknown User"}</h2>
-                  <p className="text-blue-100 mt-1">{user.email || "-"}</p>
+                  <h2 className={`text-2xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{user.name || "Unknown User"}</h2>
+                  <p className={`mt-1 ${isDark ? "text-slate-300" : "text-slate-600"}`}>{user.email || "-"}</p>
                 </div>
               </div>
             </div>
 
-            {/* User Information */}
             <div className="p-6">
-              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDark ? "text-white" : "text-slate-900"}`}>
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Account Information
-              </h3>
+              <h3 className={`text-lg font-semibold mb-4 ${isDark ? "text-white" : "text-slate-900"}`}>Account Information</h3>
               <div className="space-y-4">
                 <div className={`flex items-start pb-4 ${isDark ? "border-b border-white/10" : "border-b border-black/10"}`}>
                   <div className="w-1/3">
@@ -193,12 +182,7 @@ export default function AdminUserByIdPage() {
                     <p className={`text-sm font-semibold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>Email Address</p>
                   </div>
                   <div className="w-2/3">
-                    <p className={`flex items-center gap-2 ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-                      <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      {user.email || "-"}
-                    </p>
+                    <p className={`${isDark ? "text-slate-200" : "text-slate-700"}`}>{user.email || "-"}</p>
                   </div>
                 </div>
 
@@ -210,15 +194,12 @@ export default function AdminUserByIdPage() {
                     <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm ${
                       user.role === "admin" 
                         ? isDark
-                          ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                          ? "bg-amber-200/10 text-amber-100 border border-amber-200/30"
                           : "bg-blue-100 text-blue-700 border border-blue-300"
                         : isDark
                           ? "bg-slate-700/50 text-slate-300 border border-slate-600/30"
                           : "bg-slate-100 text-slate-700 border border-slate-300"
                     }`}>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
                       {user.role || "user"}
                     </span>
                   </div>
@@ -229,12 +210,7 @@ export default function AdminUserByIdPage() {
                     <p className={`text-sm font-semibold uppercase tracking-wide ${isDark ? "text-slate-400" : "text-slate-500"}`}>Created At</p>
                   </div>
                   <div className="w-2/3">
-                    <p className={`flex items-center gap-2 ${isDark ? "text-slate-200" : "text-slate-700"}`}>
-                      <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      {user.createdAt ? new Date(user.createdAt).toLocaleString() : "-"}
-                    </p>
+                    <p className={`${isDark ? "text-slate-200" : "text-slate-700"}`}>{user.createdAt ? new Date(user.createdAt).toLocaleString() : "-"}</p>
                   </div>
                 </div>
               </div>
