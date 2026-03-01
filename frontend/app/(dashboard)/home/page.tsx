@@ -40,7 +40,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden text-white">
+    <main className="relative min-h-screen w-full overflow-hidden text-white bg-linear-to-b from-black via-zinc-950 to-slate-950">
       
       {/* Hero Section */}
       <section className="relative h-screen w-full">
@@ -54,10 +54,13 @@ export default function HomePage() {
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/70" />
 
         {/* Hero Content */}
         <div className="relative z-10 flex h-full flex-col justify-center px-6 md:px-16 max-w-4xl">
+          <p className="mb-4 inline-flex w-fit items-center rounded-full border border-amber-200/40 bg-amber-200/10 px-4 py-1 text-xs font-medium tracking-[0.18em] uppercase text-amber-100">
+            Luxury Editorial Experience
+          </p>
           <h1 className="mb-4 text-4xl font-bold md:text-6xl">
             Unlimited Blogs,<br /> Stories & Ideas
           </h1>
@@ -69,14 +72,14 @@ export default function HomePage() {
           <div className="flex gap-4">
             <Link
               href="/blogs"
-              className="rounded bg-red-600 px-6 py-3 text-sm font-semibold hover:bg-red-700 transition-colors"
+              className="rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 hover:bg-amber-200 transition-colors shadow-lg shadow-amber-900/20"
             >
               Read Now
             </Link>
 
             <Link
               href="/about"
-              className="rounded border border-white/30 px-6 py-3 text-sm font-semibold hover:bg-white/10 transition-colors"
+              className="rounded-xl border border-amber-100/60 px-6 py-3 text-sm font-semibold text-amber-100 hover:bg-amber-200 hover:text-slate-950 transition-colors"
             >
               More Info
             </Link>
@@ -85,7 +88,7 @@ export default function HomePage() {
       </section>
 
       {/* Read Now Section - Recent Posts */}
-      <section className="relative bg-linear-to-b from-gray-900 to-black py-20 px-6 md:px-16">
+      <section className="relative bg-linear-to-b from-zinc-950 to-black py-20 px-6 md:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-12">
             <div>
@@ -94,7 +97,7 @@ export default function HomePage() {
             </div>
             <Link
               href="/blogs"
-              className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-sm font-medium"
+              className="px-4 py-2 bg-zinc-900/70 border border-white/20 rounded-xl hover:bg-zinc-800 transition-colors text-sm font-medium"
             >
               View All Posts →
             </Link>
@@ -102,7 +105,7 @@ export default function HomePage() {
 
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300"></div>
             </div>
           ) : recentPosts.length === 0 ? (
             <div className="text-center py-20">
@@ -126,13 +129,13 @@ export default function HomePage() {
               <div className="flex gap-4 justify-center">
                 <Link
                   href="/login"
-                  className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                  className="inline-block px-6 py-3 bg-amber-300 text-slate-950 rounded-xl hover:bg-amber-200 transition-colors font-medium shadow-lg shadow-amber-900/20"
                 >
                   Login to Read
                 </Link>
                 <Link
                   href="/register"
-                  className="inline-block px-6 py-3 bg-white/10 border border-white/20 text-white rounded-lg hover:bg-white/20 transition-colors font-medium"
+                  className="inline-block px-6 py-3 bg-zinc-900/70 border border-amber-100/40 text-amber-100 rounded-xl hover:bg-amber-200 hover:text-slate-950 transition-colors font-medium"
                 >
                   Sign Up
                 </Link>
@@ -143,14 +146,14 @@ export default function HomePage() {
               {recentPosts.map((post) => (
                 <article
                   key={post._id}
-                  className="group bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg overflow-hidden hover:border-white/30 transition-all duration-300 hover:transform hover:scale-[1.02]"
+                  className="group bg-zinc-900/65 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden hover:border-amber-200/30 transition-all duration-300 hover:transform hover:scale-[1.02] shadow-xl shadow-black/40"
                 >
                   <div className="p-6">
                     {/* Author Info */}
                     <div className="flex items-center gap-3 mb-4">
                       {post.user?._id ? (
                         <Link href={`/users/${post.user._id}`} className="flex items-center gap-3 group">
-                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 flex items-center justify-center text-white font-semibold overflow-hidden">
                             {post.user?.profileImage ? (
                               <img
                                 src={buildProfileImageUrl(post.user.profileImage)}
@@ -162,7 +165,7 @@ export default function HomePage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-semibold text-white group-hover:text-blue-300 transition-colors">
+                            <p className="font-semibold text-white group-hover:text-amber-100 transition-colors">
                               {post.user?.name || "Unknown User"}
                             </p>
                             <p className="text-xs text-white/60">
@@ -172,7 +175,7 @@ export default function HomePage() {
                         </Link>
                       ) : (
                         <>
-                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold overflow-hidden">
+                          <div className="w-10 h-10 rounded-full bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 flex items-center justify-center text-white font-semibold overflow-hidden">
                             {post.user?.profileImage ? (
                               <img
                                 src={buildProfileImageUrl(post.user.profileImage)}
@@ -203,7 +206,7 @@ export default function HomePage() {
                       <img
                         src={buildPostImageUrl(post.image)}
                         alt={post.title || "Post image"}
-                        className="w-full h-48 object-cover rounded-lg mb-3 border border-white/10"
+                        className="w-full h-48 object-cover rounded-xl mb-3 border border-white/10"
                       />
                     )}
                     <p className="text-white/80 line-clamp-4 mb-4 leading-relaxed">
@@ -220,7 +223,7 @@ export default function HomePage() {
                       </div>
                       <Link
                         href="/blogs"
-                        className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                        className="text-sm text-amber-200 hover:text-amber-100 transition-colors font-medium"
                       >
                         Read More →
                       </Link>
@@ -244,9 +247,9 @@ export default function HomePage() {
             {/* Feature 1 */}
             <Link
               href="/blogs"
-              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="text-center rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:bg-zinc-900/70 hover:border-amber-200/20 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-200/30"
             >
-              <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
@@ -260,9 +263,9 @@ export default function HomePage() {
             {/* Feature 2 */}
             <Link
               href="/register"
-              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="text-center rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:bg-zinc-900/70 hover:border-amber-200/20 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-200/30"
             >
-              <div className="w-16 h-16 bg-linear-to-br from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -276,9 +279,9 @@ export default function HomePage() {
             {/* Feature 3 */}
             <Link
               href="/blogs"
-              className="text-center rounded-xl p-4 transition-all duration-300 hover:bg-white/5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/40"
+              className="text-center rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all duration-300 hover:bg-zinc-900/70 hover:border-amber-200/20 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-amber-200/30"
             >
-              <div className="w-16 h-16 bg-linear-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
