@@ -1,10 +1,14 @@
 import axios from "axios";
 
 const SERVER_BASE_URL =
-  process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000";
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "http://localhost:5000";
 
-// Use the backend URL for both server and client side
-const baseURL = SERVER_BASE_URL;
+const CLIENT_BASE_URL = "/api/backend";
+
+const baseURL = typeof window === "undefined" ? SERVER_BASE_URL : CLIENT_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL,
