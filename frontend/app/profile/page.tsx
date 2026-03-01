@@ -11,6 +11,7 @@ import { buildPostImageUrl, setSessionUser } from "@/lib/user-session";
 export default function ProfilePage() {
     const router = useRouter();
     const toast = useToast();
+    const [hydrated, setHydrated] = useState(false);
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -30,6 +31,14 @@ export default function ProfilePage() {
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
     const [postSearchTerm, setPostSearchTerm] = useState("");
     const POST_PREVIEW_LENGTH = 280;
+
+    const handleBack = () => {
+        if (typeof window !== "undefined" && window.history.length > 1) {
+            router.back();
+            return;
+        }
+        router.push("/home");
+    };
 
     const fetchProfile = async () => {
         try {
@@ -75,6 +84,7 @@ export default function ProfilePage() {
     };
 
     useEffect(() => {
+        setHydrated(true);
         fetchProfile();
     }, []);
 
@@ -291,13 +301,15 @@ export default function ProfilePage() {
         }
     };
 
+    if (!hydrated) return null;
+
     if (loading) {
         return (
-            <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
-                <div className="container mx-auto px-4 py-8 pt-20">
+            <div className="profile-page min-h-screen bg-linear-to-br from-black via-zinc-950 to-slate-950">
+                <div className="container mx-auto px-4 py-8 pt-20 max-w-7xl">
                     <div className="flex items-center justify-center min-h-100">
                         <div className="text-center">
-                            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mx-auto"></div>
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-300/20 border-t-amber-300 mx-auto"></div>
                             <p className="mt-4 text-slate-300 text-lg">Loading your profile...</p>
                         </div>
                     </div>
@@ -308,9 +320,9 @@ export default function ProfilePage() {
 
     if (authError) {
         return (
-            <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
-                <div className="container mx-auto px-4 py-8 pt-20 max-w-2xl">
-                    <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 rounded-2xl p-8 text-center">
+            <div className="profile-page min-h-screen bg-linear-to-br from-black via-zinc-950 to-slate-950">
+                <div className="container mx-auto px-4 py-8 pt-20 max-w-3xl">
+                    <div className="bg-red-500/10 backdrop-blur-xl border border-red-500/30 rounded-2xl p-8 text-center shadow-lg shadow-black/40">
                         <svg className="w-20 h-20 text-red-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -318,7 +330,7 @@ export default function ProfilePage() {
                         <p className="text-slate-300 mb-6 text-lg">You need to be logged in to view your profile.</p>
                         <button
                             onClick={() => router.push('/login')}
-                            className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
+                            className="px-8 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors font-semibold"
                         >
                             Go to Login
                         </button>
@@ -331,36 +343,47 @@ export default function ProfilePage() {
     if (!profile) return null;
 
     return (
-        <div className="profile-page min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="profile-page min-h-screen bg-linear-to-br from-black via-zinc-950 to-slate-950">
             {/* Decorative background elements */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-700"></div>
-                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-200/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-yellow-100/8 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-orange-200/8 rounded-full blur-3xl"></div>
             </div>
 
-            <div className="relative container mx-auto px-4 py-8 pt-20 max-w-5xl">
-                {profile.role === "admin" && (
-                    <div className="mb-6">
+            <div className="relative container mx-auto px-4 py-8 pt-20 max-w-7xl">
+                <div className="mb-6 flex flex-wrap items-center gap-3">
+                    {profile.role === "admin" ? (
                         <Link
                             href="/admin"
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700/50 border border-white/20 text-slate-300 rounded-lg hover:bg-slate-600/50 transition-colors shadow-sm font-medium"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 border border-white/15 text-slate-300 rounded-lg hover:bg-zinc-700 transition-colors font-medium"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
                             Back to Admin Panel
                         </Link>
-                    </div>
-                )}
-                <div className="bg-slate-800/40 backdrop-blur-2xl rounded-3xl shadow-2xl overflow-hidden border border-white/10">
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={handleBack}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 border border-white/15 text-slate-200 rounded-lg hover:bg-zinc-700 transition-colors font-medium"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            Back
+                        </button>
+                    )}
+                </div>
+                <div className="bg-zinc-900/60 backdrop-blur-xl rounded-2xl shadow-lg shadow-black/40 overflow-hidden border border-white/10">
                     {/* Header Section with Bold Gradient */}
-                    <div className="relative bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 h-48 overflow-hidden">
+                    <div className="relative bg-zinc-900 h-44 overflow-hidden border-b border-white/10">
                         <div className="absolute inset-0 bg-black/20"></div>
                         <div className="absolute inset-0 bg-linear-to-t from-slate-900/50 to-transparent"></div>
                         {/* Animated pattern overlay */}
                         <div className="absolute inset-0 opacity-20">
-                            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+                            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(251,191,36,0.16),transparent_55%)]"></div>
                         </div>
                     </div>
                     
@@ -369,8 +392,8 @@ export default function ProfilePage() {
                         <div className="flex flex-col sm:flex-row items-start sm:items-end gap-6 -mt-20 mb-8">
                             {/* Profile Image with Glow Effect */}
                             <div className="relative">
-                                <div className="absolute inset-0 bg-linear-to-br from-purple-500 to-pink-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
-                                <div className="relative w-40 h-40 rounded-full border-4 border-slate-800 bg-slate-800 overflow-hidden shadow-2xl ring-4 ring-purple-500/30">
+                                <div className="absolute inset-0 bg-linear-to-br from-amber-300/70 to-yellow-200/50 rounded-full blur-xl opacity-40"></div>
+                                <div className="relative w-40 h-40 rounded-full border-4 border-zinc-900 bg-zinc-900 overflow-hidden shadow-2xl ring-4 ring-amber-200/25">
                                     {profile.profileImage ? (
                                         <img
                                             src={`${process.env.NEXT_PUBLIC_API_BASE_URL}${profile.profileImage}`}
@@ -378,14 +401,14 @@ export default function ProfilePage() {
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full bg-linear-to-br from-purple-600 via-pink-600 to-blue-600 flex items-center justify-center text-white text-5xl font-bold">
+                                        <div className="w-full h-full bg-linear-to-br from-zinc-700 via-zinc-800 to-black flex items-center justify-center text-amber-100 text-5xl font-bold">
                                             {profile.name[0]?.toUpperCase()}
                                         </div>
                                     )}
                                 </div>
                                 <label
                                     htmlFor="profile-image"
-                                    className="absolute bottom-2 right-2 bg-linear-to-r from-purple-600 to-pink-600 text-white p-3 rounded-full cursor-pointer hover:from-purple-700 hover:to-pink-700 shadow-xl hover:scale-110 transition-transform"
+                                    className="absolute bottom-2 right-2 bg-amber-300 text-slate-950 p-3 rounded-full cursor-pointer hover:bg-amber-200 shadow-xl hover:scale-110 transition-transform"
                                 >
                                     {uploadingImage ? (
                                         <div className="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full"></div>
@@ -408,7 +431,7 @@ export default function ProfilePage() {
 
                             {/* Name and Role */}
                             <div className="flex-1">
-                                <h1 className="text-4xl font-extrabold bg-linear-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                                <h1 className="text-4xl font-extrabold bg-linear-to-r from-amber-100 via-amber-300 to-yellow-100 bg-clip-text text-transparent mb-2">
                                     {profile.name}
                                 </h1>
                                 <p className="text-slate-300 text-lg mb-3 flex items-center gap-2">
@@ -417,7 +440,7 @@ export default function ProfilePage() {
                                     </svg>
                                     {profile.name}
                                 </p>
-                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 text-sm font-bold rounded-full backdrop-blur-sm">
+                                <span className="inline-flex items-center gap-2 px-4 py-2 bg-amber-200/10 border border-amber-200/30 text-amber-100 text-sm font-bold rounded-full backdrop-blur-sm">
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                     </svg>
@@ -429,7 +452,7 @@ export default function ProfilePage() {
                             {!isEditMode && (
                                 <button
                                     onClick={() => setIsEditMode(true)}
-                                    className="px-6 py-3 bg-linear-to-r from-blue-600 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center gap-2 shadow-lg hover:shadow-blue-500/50 font-semibold"
+                                    className="px-6 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2 font-semibold"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -441,9 +464,9 @@ export default function ProfilePage() {
 
                         {/* Edit Form */}
                         {isEditMode && (
-                            <div className="bg-slate-700/50 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
+                            <div className="bg-zinc-900/70 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
                                 <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-6 h-6 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     Edit Profile
@@ -455,7 +478,7 @@ export default function ProfilePage() {
                                             type="text"
                                             value={editData.name}
                                             onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                            className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500/50 transition-all text-white placeholder-slate-500"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/15 rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200/50 transition-all text-white placeholder-slate-500"
                                             required
                                             minLength={2}
                                         />
@@ -466,7 +489,7 @@ export default function ProfilePage() {
                                             type="email"
                                             value={editData.email}
                                             onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                                            className="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500/50 transition-all text-white placeholder-slate-500"
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/15 rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200/50 transition-all text-white placeholder-slate-500"
                                             required
                                         />
                                     </div>
@@ -474,7 +497,7 @@ export default function ProfilePage() {
                                         <button
                                             type="submit"
                                             disabled={isSaving}
-                                            className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 transition-all font-semibold shadow-lg"
+                                            className="px-8 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 disabled:bg-gray-500 transition-colors font-semibold"
                                         >
                                             {isSaving ? "Saving..." : "Save Changes"}
                                         </button>
@@ -484,7 +507,7 @@ export default function ProfilePage() {
                                                 setIsEditMode(false);
                                                 setEditData({ name: profile.name, email: profile.email });
                                             }}
-                                            className="px-8 py-3 border border-white/20 text-slate-300 rounded-xl hover:bg-slate-700/50 transition-all font-semibold"
+                                            className="px-8 py-3 border border-white/20 text-slate-300 rounded-lg hover:bg-slate-700/50 transition-colors font-semibold"
                                         >
                                             Cancel
                                         </button>
@@ -495,32 +518,32 @@ export default function ProfilePage() {
 
                         {/* Stats with Bold Colors */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                            <div className="relative bg-linear-to-br from-purple-600/20 to-purple-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-purple-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl"></div>
-                                <svg className="w-12 h-12 text-purple-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="relative bg-zinc-900/70 backdrop-blur-xl rounded-2xl p-6 text-center border border-white/10 hover:border-amber-200/30 transition-colors">
+                                <div className="absolute inset-0 bg-linear-to-br from-amber-200/6 to-transparent rounded-2xl"></div>
+                                <svg className="w-12 h-12 text-amber-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-amber-100 to-amber-300 bg-clip-text text-transparent">
                                     {posts.length}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Blog Posts</div>
                             </div>
-                            <div className="relative bg-linear-to-br from-pink-600/20 to-pink-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-pink-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-transparent rounded-2xl"></div>
-                                <svg className="w-12 h-12 text-pink-400 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
+                            <div className="relative bg-zinc-900/70 backdrop-blur-xl rounded-2xl p-6 text-center border border-white/10 hover:border-amber-200/30 transition-colors">
+                                <div className="absolute inset-0 bg-linear-to-br from-amber-200/8 to-transparent rounded-2xl"></div>
+                                <svg className="w-12 h-12 text-amber-200 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
-                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent">
+                                <div className="relative text-5xl font-extrabold bg-linear-to-r from-amber-100 to-amber-300 bg-clip-text text-transparent">
                                     {posts.reduce((acc, post) => acc + (post.likes?.length || 0), 0)}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Total Likes</div>
                             </div>
-                            <div className="relative bg-linear-to-br from-blue-600/20 to-cyan-800/20 backdrop-blur-xl rounded-2xl p-6 text-center border border-blue-500/30 hover:scale-105 transition-transform">
-                                <div className="absolute inset-0 bg-linear-to-br from-blue-500/10 to-transparent rounded-2xl"></div>
-                                <svg className="w-12 h-12 text-blue-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="relative bg-zinc-900/70 backdrop-blur-xl rounded-2xl p-6 text-center border border-white/10 hover:border-amber-200/30 transition-colors">
+                                <div className="absolute inset-0 bg-linear-to-br from-amber-200/8 to-transparent rounded-2xl"></div>
+                                <svg className="w-12 h-12 text-amber-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
-                                <div className="relative text-3xl font-extrabold bg-linear-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                                <div className="relative text-3xl font-extrabold bg-linear-to-r from-amber-100 to-amber-300 bg-clip-text text-transparent">
                                     {profile.role === "admin" ? "ADMIN" : "USER"}
                                 </div>
                                 <div className="text-slate-300 text-sm font-semibold mt-2">Account Type</div>
@@ -528,7 +551,7 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Create Post */}
-                        <div className="bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
+                        <div className="bg-zinc-900/65 backdrop-blur-xl rounded-2xl p-6 mb-8 border border-white/10">
                             <h2 className="text-2xl font-bold text-white mb-4">Create Post</h2>
                             <form onSubmit={handleCreatePost} className="space-y-4">
                                 <div>
@@ -538,7 +561,7 @@ export default function ProfilePage() {
                                         value={newPostTitle}
                                         onChange={(e) => setNewPostTitle(e.target.value)}
                                         maxLength={120}
-                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200"
                                         placeholder="Write a heading..."
                                         required
                                     />
@@ -548,7 +571,7 @@ export default function ProfilePage() {
                                     onChange={(e) => setNewPostContent(e.target.value)}
                                     rows={5}
                                     maxLength={5000}
-                                    className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200 resize-none"
                                     placeholder="Write your new blog post..."
                                     required
                                 />
@@ -558,7 +581,7 @@ export default function ProfilePage() {
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => setNewPostImage(e.target.files?.[0] || null)}
-                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200"
                                     />
                                 </div>
                                 <div className="flex items-center justify-between gap-3">
@@ -566,7 +589,7 @@ export default function ProfilePage() {
                                     <button
                                         type="submit"
                                         disabled={isCreatingPost || !newPostTitle.trim() || !newPostContent.trim()}
-                                        className="min-h-10 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+                                        className="min-h-10 px-5 py-2 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 disabled:bg-amber-200/60 disabled:cursor-not-allowed transition-colors"
                                     >
                                         {isCreatingPost ? "Publishing..." : "Publish"}
                                     </button>
@@ -577,7 +600,7 @@ export default function ProfilePage() {
                         {/* My Posts */}
                         <div>
                             <h2 className="text-3xl font-extrabold text-white mb-6 flex items-center gap-3">
-                                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-8 h-8 text-amber-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                                 My Blog Posts
@@ -589,25 +612,25 @@ export default function ProfilePage() {
                                     value={postSearchTerm}
                                     onChange={(e) => setPostSearchTerm(e.target.value)}
                                     placeholder="Search your blogs by heading or content..."
-                                    className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200"
                                 />
                             </div>
 
                             {posts.length === 0 ? (
-                                <div className="text-center py-16 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
+                                <div className="text-center py-16 bg-zinc-900/65 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg shadow-black/40">
                                     <svg className="w-20 h-20 text-slate-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                     <p className="text-slate-300 text-lg mb-6">You haven't posted anything yet.</p>
                                     <button
                                         onClick={() => router.push('/blogs')}
-                                        className="px-8 py-3 bg-linear-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all font-semibold shadow-lg hover:shadow-purple-500/50"
+                                        className="px-8 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors font-semibold"
                                     >
                                         Create Your First Post
                                     </button>
                                 </div>
                             ) : filteredProfilePosts.length === 0 ? (
-                                <div className="text-center py-12 bg-slate-700/30 backdrop-blur-xl rounded-2xl border border-white/10">
+                                <div className="text-center py-12 bg-zinc-900/65 backdrop-blur-xl rounded-2xl border border-white/10 shadow-lg shadow-black/40">
                                     <p className="text-slate-300 text-lg">No matching blogs found.</p>
                                     <button
                                         type="button"
@@ -620,8 +643,8 @@ export default function ProfilePage() {
                             ) : (
                                 <div className="space-y-4">
                                     {filteredProfilePosts.map((post) => (
-                                        <div key={post._id} className="group relative bg-slate-700/40 backdrop-blur-xl rounded-2xl p-6 hover:bg-slate-700/60 transition-all border border-white/10 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/20">
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-purple-500/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                        <div key={post._id} className="group relative bg-zinc-900/65 backdrop-blur-xl rounded-2xl p-6 hover:bg-zinc-900/80 transition-all border border-white/10 hover:border-amber-200/30 shadow-lg shadow-black/35">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-200/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                             <div className="relative flex justify-between items-start mb-4">
                                                 <p className="text-sm text-slate-400 flex items-center gap-2 font-medium">
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -634,7 +657,7 @@ export default function ProfilePage() {
                                                     })}
                                                 </p>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="flex items-center gap-2 px-3 py-1 bg-pink-500/20 border border-pink-500/30 text-pink-300 text-sm font-bold rounded-full backdrop-blur-sm">
+                                                    <span className="flex items-center gap-2 px-3 py-1 bg-amber-200/10 border border-amber-200/30 text-amber-100 text-sm font-bold rounded-full backdrop-blur-sm">
                                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                                         </svg>
@@ -642,7 +665,7 @@ export default function ProfilePage() {
                                                     </span>
                                                     <button
                                                         onClick={() => handleStartEditPost(post)}
-                                                        className="min-h-10 min-w-10 text-blue-300 hover:text-blue-200 transition-colors p-2 hover:bg-blue-500/20 rounded"
+                                                        className="min-h-10 min-w-10 text-amber-200 hover:text-amber-100 transition-colors p-2 hover:bg-amber-200/20 rounded"
                                                         title="Edit post"
                                                     >
                                                         <svg
@@ -686,7 +709,7 @@ export default function ProfilePage() {
                                                         value={editingPostTitle}
                                                         onChange={(e) => setEditingPostTitle(e.target.value)}
                                                         maxLength={120}
-                                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200"
                                                         placeholder="Post heading"
                                                     />
                                                     <textarea
@@ -694,7 +717,7 @@ export default function ProfilePage() {
                                                         onChange={(e) => setEditingPostContent(e.target.value)}
                                                         rows={5}
                                                         maxLength={5000}
-                                                        className="w-full px-4 py-3 border border-white/15 bg-slate-900 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                                        className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-200 resize-none"
                                                     />
                                                     <div className="flex items-center justify-end gap-3">
                                                         <button
@@ -709,7 +732,7 @@ export default function ProfilePage() {
                                                             type="button"
                                                             onClick={handleSaveEditedPost}
                                                             disabled={isUpdatingPost || !editingPostTitle.trim() || !editingPostContent.trim()}
-                                                            className="min-h-10 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+                                                            className="min-h-10 px-4 py-2 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 disabled:bg-amber-200/60 disabled:cursor-not-allowed transition-colors"
                                                         >
                                                             {isUpdatingPost ? "Saving..." : "Save"}
                                                         </button>
@@ -736,7 +759,7 @@ export default function ProfilePage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => toggleExpandedPost(post._id)}
-                                                            className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                                            className="mt-2 text-sm text-amber-200 hover:text-amber-100 transition-colors"
                                                         >
                                                             {expandedPosts[post._id] ? "Show less" : "Read more"}
                                                         </button>
