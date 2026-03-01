@@ -103,10 +103,10 @@ export default function AdminLayout({
 
   const navItemBaseClass = "flex items-center gap-3 px-4 py-3 rounded-xl border transition-all duration-200 group shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]";
   const navItemInactiveClass = isDark
-    ? "border-white/20 bg-black/25 hover:bg-black/35 shadow-black/35"
+    ? "border-white/15 bg-zinc-900/70 hover:bg-zinc-800 shadow-black/35"
     : "border-black/15 bg-black/8 hover:bg-black/12 shadow-black/10";
   const navItemActiveClass = isDark
-    ? "border-white/40 bg-white/14 text-white shadow-white/20"
+    ? "border-amber-200/40 bg-amber-200/12 text-amber-100 shadow-amber-900/20"
     : "border-black/20 bg-white/80 text-slate-900 shadow-slate-300/30";
   const navItemClass = (active: boolean) =>
     `${navItemBaseClass} ${active ? navItemActiveClass : navItemInactiveClass}`;
@@ -123,34 +123,34 @@ export default function AdminLayout({
     <div
       className={`flex min-h-screen ${
         isDark
-          ? "bg-linear-to-br from-slate-900 via-purple-900 to-slate-900"
+          ? "bg-linear-to-br from-black via-zinc-950 to-slate-950"
           : "bg-linear-to-br from-slate-100 via-white to-slate-100"
       }`}
     >
       {/* Decorative background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-blue-500/10" : "bg-blue-500/20"}`}></div>
-        <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-purple-500/10" : "bg-purple-500/20"}`}></div>
-        <div className={`absolute top-1/2 left-1/2 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-indigo-500/10" : "bg-indigo-500/20"}`}></div>
+        <div className={`absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-amber-200/8" : "bg-blue-500/20"}`}></div>
+        <div className={`absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-yellow-100/6" : "bg-purple-500/20"}`}></div>
+        <div className={`absolute top-1/2 left-1/2 w-96 h-96 rounded-full blur-3xl ${isDark ? "bg-orange-200/6" : "bg-indigo-500/20"}`}></div>
       </div>
 
       {/* Sidebar */}
       <aside
         className={`relative w-64 backdrop-blur-xl p-6 ${
           isDark
-            ? "bg-linear-to-b from-slate-800/50 to-slate-900/50 border-r border-white/10 text-white"
+            ? "bg-linear-to-b from-zinc-900/70 to-black/70 border-r border-white/10 text-white"
             : "bg-linear-to-b from-white/80 to-slate-100/80 border-r border-slate-300/70 text-slate-900"
         }`}
       >
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-linear-to-br from-zinc-700 to-zinc-900 ring-1 ring-amber-200/30 rounded-lg flex items-center justify-center text-amber-100">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold bg-linear-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h2 className="text-xl font-bold bg-linear-to-r from-amber-100 via-amber-300 to-yellow-100 bg-clip-text text-transparent">
               Admin Panel
             </h2>
           </div>
@@ -256,7 +256,7 @@ export default function AdminLayout({
                       }`}
                     >
                       <span className={`truncate pr-2 ${isDark ? "text-slate-300" : "text-slate-700"}`}>{item.name}</span>
-                      <span className={`font-semibold whitespace-nowrap ${isDark ? "text-blue-300" : "text-blue-700"}`}>{item.postsCount}</span>
+                      <span className={`font-semibold whitespace-nowrap ${isDark ? "text-amber-200" : "text-blue-700"}`}>{item.postsCount}</span>
                     </div>
                   ))
                 )}
@@ -270,7 +270,7 @@ export default function AdminLayout({
           <div
             className={`rounded-lg px-4 py-3 ${
               isDark
-                ? "bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-white/10"
+                ? "bg-linear-to-r from-amber-200/10 to-yellow-100/8 border border-amber-200/20"
                 : "bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-black/10"
             }`}
           >
