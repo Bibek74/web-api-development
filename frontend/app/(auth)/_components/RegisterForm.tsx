@@ -47,7 +47,7 @@ export default function RegisterForm() {
         <input
           id="name"
           autoComplete="name"
-          className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
+          className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
           {...register("name")}
           placeholder="Your name"
         />
@@ -64,7 +64,7 @@ export default function RegisterForm() {
           id="email"
           type="email"
           autoComplete="email"
-          className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
+          className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
           {...register("email")}
           placeholder="you@example.com"
         />
@@ -82,7 +82,7 @@ export default function RegisterForm() {
             id="password"
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
-            className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
+            className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
             {...register("password")}
             placeholder="••••••"
           />
@@ -118,7 +118,7 @@ export default function RegisterForm() {
             id="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
             autoComplete="new-password"
-            className="h-11 w-full rounded-xl border border-white/30 bg-white/10 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/40"
+            className="h-11 w-full rounded-lg border border-white/15 bg-black/50 px-4 pr-11 text-sm font-medium text-white outline-none placeholder-white/60 focus:border-amber-300 focus:ring-2 focus:ring-amber-300/40"
             {...register("confirmPassword")}
             placeholder="••••••"
           />
@@ -148,7 +148,7 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={isSubmitting || pending}
-        className="h-11 w-full rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold tracking-wide shadow-lg shadow-blue-500/35 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-60"
+        className="h-11 w-full rounded-lg bg-amber-300 text-slate-950 text-sm font-semibold tracking-wide hover:bg-amber-200 disabled:opacity-60"
       >
         {isSubmitting || pending ? "Creating account..." : "Create account"}
       </button>
@@ -159,7 +159,7 @@ export default function RegisterForm() {
 
       <div className="mt-1 text-center text-sm text-white/85">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-blue-300 hover:text-blue-200 hover:underline">
+        <Link href="/login" className="font-semibold text-amber-200 hover:text-amber-100 hover:underline">
           Log in
         </Link>
       </div>
