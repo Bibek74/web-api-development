@@ -45,24 +45,24 @@ export default function AdminDashboardPage() {
   return (
     <div className="relative flex min-h-screen items-center justify-center px-4 py-10">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className={`absolute left-1/4 top-1/4 h-72 w-72 rounded-full blur-3xl ${isDark ? "bg-blue-500/10" : "bg-blue-500/20"}`} />
-        <div className={`absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full blur-3xl ${isDark ? "bg-purple-500/10" : "bg-purple-500/20"}`} />
+        <div className={`absolute left-1/4 top-1/4 h-72 w-72 rounded-full blur-3xl ${isDark ? "bg-amber-200/8" : "bg-blue-500/20"}`} />
+        <div className={`absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full blur-3xl ${isDark ? "bg-yellow-100/6" : "bg-purple-500/20"}`} />
       </div>
 
       <div
         className={`relative w-full max-w-5xl rounded-3xl p-7 shadow-2xl backdrop-blur-2xl sm:p-8 ${
           isDark
-            ? "border border-white/15 bg-slate-900/45"
+            ? "border border-white/15 bg-zinc-900/60 shadow-black/40"
             : "border border-black/10 bg-white/80"
         }`}
       >
-        <h1 className="mb-8 bg-linear-to-r from-blue-300 via-purple-300 to-indigo-300 bg-clip-text text-center text-4xl font-extrabold text-transparent">
+        <h1 className="mb-8 bg-linear-to-r from-amber-100 via-amber-300 to-yellow-100 bg-clip-text text-center text-4xl font-extrabold text-transparent">
           Admin Overview
         </h1>
 
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-500" />
+            <div className="h-12 w-12 animate-spin rounded-full border-2 border-amber-300/20 border-t-amber-300" />
           </div>
         )}
 
@@ -74,19 +74,19 @@ export default function AdminDashboardPage() {
 
         {!loading && !error && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-slate-900/55" : "border-black/10 bg-white/85"}`}>
+            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-zinc-900/70 hover:border-amber-200/30" : "border-black/10 bg-white/85"}`}>
               <p className={`text-xs uppercase tracking-widest ${isDark ? "text-slate-400" : "text-slate-500"}`}>Total Users</p>
-              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>{totalUsers}</p>
+              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-amber-100" : "text-slate-900"}`}>{totalUsers}</p>
             </div>
 
-            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-slate-900/55" : "border-black/10 bg-white/85"}`}>
+            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-zinc-900/70 hover:border-amber-200/30" : "border-black/10 bg-white/85"}`}>
               <p className={`text-xs uppercase tracking-widest ${isDark ? "text-slate-400" : "text-slate-500"}`}>Total Posts</p>
-              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>{totalPosts}</p>
+              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-amber-100" : "text-slate-900"}`}>{totalPosts}</p>
             </div>
 
-            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-slate-900/55" : "border-black/10 bg-white/85"}`}>
+            <div className={`rounded-2xl border p-6 shadow-2xl backdrop-blur-2xl transition-transform duration-200 hover:-translate-y-0.5 ${isDark ? "border-white/20 bg-zinc-900/70 hover:border-amber-200/30" : "border-black/10 bg-white/85"}`}>
               <p className={`text-xs uppercase tracking-widest ${isDark ? "text-slate-400" : "text-slate-500"}`}>Avg Posts/User</p>
-              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>{avgPostsPerUser}</p>
+              <p className={`mt-3 text-4xl font-extrabold ${isDark ? "text-amber-100" : "text-slate-900"}`}>{avgPostsPerUser}</p>
             </div>
           </div>
         )}
