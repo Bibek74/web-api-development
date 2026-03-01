@@ -282,37 +282,44 @@ export default function BlogsPage() {
 
     if (loading) {
         return (
-            <div className="blogs-page min-h-screen bg-slate-950 text-white pt-24 px-4">
-                <div className="mx-auto max-w-6xl flex items-center justify-center min-h-[60vh]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+            <div className="blogs-page min-h-screen bg-linear-to-b from-black via-zinc-950 to-slate-950 text-white pt-24 px-4">
+                <div className="mx-auto max-w-7xl flex items-center justify-center min-h-[60vh]">
+                    <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-300/20 border-t-amber-300"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="blogs-page min-h-screen bg-slate-950 text-slate-100">
+        <div className="blogs-page relative min-h-screen overflow-hidden bg-linear-to-b from-black via-zinc-950 to-slate-950 text-slate-100">
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-70">
+                <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-amber-300/8 blur-3xl" />
+                <div className="absolute top-1/3 -right-24 h-80 w-80 rounded-full bg-yellow-200/6 blur-3xl" />
+            </div>
             {/* Hero Section for Non-Authenticated Users */}
             {!isAuthenticated && (
-                <div className="bg-linear-to-r from-blue-700 to-purple-700 text-white py-12">
-                    <div className="container mx-auto px-4 max-w-6xl">
+                <div className="relative border-b border-white/10 bg-linear-to-r from-zinc-950/95 via-slate-950/95 to-black/95 text-white py-14">
+                    <div className="container mx-auto px-4 max-w-7xl relative">
                         <div className="text-center">
-                            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                            <p className="inline-flex items-center rounded-full border border-amber-200/40 bg-amber-200/10 px-4 py-1 text-xs font-medium tracking-[0.18em] uppercase text-amber-100 mb-4">
+                                Curated stories from the community
+                            </p>
+                            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
                                 ✨ Welcome to Blogify
                             </h1>
-                            <p className="text-lg md:text-xl mb-6 text-blue-100">
+                            <p className="text-lg md:text-xl mb-7 text-slate-300 max-w-2xl mx-auto">
                                 Discover amazing stories, ideas, and insights from our community
                             </p>
                             <div className="flex flex-wrap gap-4 justify-center">
                                 <button
                                     onClick={() => router.push('/login')}
-                                    className="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold shadow-lg"
+                                    className="min-h-11 px-8 py-3 bg-amber-300 text-slate-950 rounded-xl hover:bg-amber-200 transition-colors font-semibold shadow-lg shadow-amber-900/20"
                                 >
                                     Sign In
                                 </button>
                                 <button
                                     onClick={() => router.push('/register')}
-                                    className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-colors font-semibold"
+                                    className="min-h-11 px-8 py-3 bg-transparent border border-amber-100/60 text-amber-100 rounded-xl hover:bg-amber-200 hover:text-slate-950 transition-colors font-semibold"
                                 >
                                     Create Account
                                 </button>
@@ -322,11 +329,11 @@ export default function BlogsPage() {
                 </div>
             )}
 
-            <div className="container mx-auto px-4 pt-6 pb-12 max-w-6xl">
+            <div className="container relative mx-auto px-4 pt-8 pb-14 max-w-7xl">
                 <div className="mb-4 flex items-center justify-start">
                     <button
                         onClick={() => router.push('/home')}
-                        className="min-h-11 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors flex items-center gap-2 border border-white/10"
+                        className="min-h-11 px-4 py-2 bg-zinc-800 text-slate-100 rounded-lg hover:bg-zinc-700 transition-colors flex items-center gap-2 border border-white/15"
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -335,13 +342,13 @@ export default function BlogsPage() {
                     </button>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur p-5 md:p-6 mb-8">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/65 backdrop-blur-xl shadow-lg shadow-black/40 p-5 md:p-7 mb-8">
                     <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                         <div>
-                            <h2 className="text-3xl font-bold text-white">
+                            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
                                 {isAuthenticated ? "All Blog Posts" : "Latest Posts"}
                             </h2>
-                            <p className="text-sm text-slate-300 mt-1">
+                            <p className="text-sm text-slate-300 mt-2">
                                 Explore stories from the community and interact with posts.
                             </p>
                         </div>
@@ -350,7 +357,7 @@ export default function BlogsPage() {
                             {isAuthenticated && (
                                 <button
                                     onClick={() => setShowCreateForm(!showCreateForm)}
-                                    className="min-h-11 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                                    className="min-h-11 px-4 py-2 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors flex items-center gap-2"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -362,7 +369,7 @@ export default function BlogsPage() {
                             <button
                                 onClick={fetchPosts}
                                 disabled={refreshing}
-                                className="min-h-11 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                className="min-h-11 px-4 py-2 bg-zinc-800 text-slate-100 rounded-lg hover:bg-zinc-700 disabled:bg-zinc-700 disabled:cursor-not-allowed transition-colors flex items-center gap-2 border border-white/15"
                             >
                                 <svg className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -392,18 +399,18 @@ export default function BlogsPage() {
                                     setTimeout(() => setShowNameSuggestions(false), 120);
                                 }}
                                 placeholder="Search by content or author name..."
-                                className="w-full min-h-11 rounded-lg border border-white/15 bg-slate-950 px-4 py-2 text-white placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full min-h-11 rounded-lg border border-white/15 bg-black/50 px-4 py-2 text-white placeholder:text-slate-400 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/40"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowSearchPanel((prev) => !prev)}
-                                className="min-h-11 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                className="min-h-11 px-4 py-2 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors"
                             >
                                 Search
                             </button>
 
                             {showNameSuggestions && (
-                                <div className="absolute left-0 right-22.5 top-13 z-20 rounded-lg border border-white/15 bg-slate-900 shadow-xl overflow-hidden">
+                                <div className="absolute left-0 right-22.5 top-13 z-20 rounded-lg border border-white/15 bg-zinc-900 shadow-lg shadow-black/40 overflow-hidden">
                                     {globalAutocompleteSuggestions.length > 0 ? (
                                         <>
                                             <div className="px-4 py-2 text-xs text-slate-400 border-b border-white/10">
@@ -432,7 +439,7 @@ export default function BlogsPage() {
                         </div>
 
                         {showSearchPanel && (
-                            <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/80 p-4 space-y-4">
+                            <div className="mt-3 rounded-2xl border border-white/10 bg-black/60 p-4 md:p-5 space-y-4">
                                 <div>
                                     <p className="text-sm font-semibold text-white mb-2">Blog Types</p>
                                     <div className="flex flex-wrap gap-2">
@@ -443,8 +450,8 @@ export default function BlogsPage() {
                                                 onClick={() => setSelectedType(type)}
                                                 className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
                                                     selectedType === type
-                                                        ? "bg-blue-600 border-blue-500 text-white"
-                                                        : "bg-slate-900 border-white/15 text-slate-300 hover:bg-slate-800"
+                                                        ? "bg-amber-300 border-amber-200 text-slate-950"
+                                                        : "bg-zinc-900 border-white/15 text-slate-300 hover:bg-zinc-800"
                                                 }`}
                                             >
                                                 {type} {type !== "All" ? `(${blogTypeCounts[type] || 0})` : `(${posts.length})`}
@@ -462,7 +469,7 @@ export default function BlogsPage() {
                                                     key={suggestion}
                                                     type="button"
                                                     onClick={() => setSearchTerm(suggestion)}
-                                                    className="px-3 py-1.5 rounded-full text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                                    className="px-3 py-1.5 rounded-full text-sm bg-zinc-900 border border-white/15 text-slate-300 hover:bg-zinc-800 transition-colors"
                                                 >
                                                     {suggestion}
                                                 </button>
@@ -480,14 +487,14 @@ export default function BlogsPage() {
                                             setSearchTerm("");
                                             setSelectedType("All");
                                         }}
-                                        className="px-3 py-1.5 rounded-md text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                        className="px-3 py-1.5 rounded-md text-sm bg-zinc-900 border border-white/15 text-slate-300 hover:bg-zinc-800 transition-colors"
                                     >
                                         Reset Filters
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => setShowSearchPanel(false)}
-                                        className="px-3 py-1.5 rounded-md text-sm bg-slate-900 border border-white/15 text-slate-300 hover:bg-slate-800 transition-colors"
+                                        className="px-3 py-1.5 rounded-md text-sm bg-zinc-900 border border-white/15 text-slate-300 hover:bg-zinc-800 transition-colors"
                                     >
                                         Close
                                     </button>
@@ -499,8 +506,8 @@ export default function BlogsPage() {
 
                 {/* Create Post Form - Only for Authenticated Users */}
                 {isAuthenticated && showCreateForm && (
-                    <div className="bg-slate-900/70 rounded-xl border border-white/10 p-6 mb-6">
-                        <h2 className="text-xl font-semibold text-white mb-4">Create New Blog Post</h2>
+                    <div className="bg-zinc-900/65 rounded-2xl border border-white/10 shadow-lg shadow-black/40 p-6 mb-6">
+                        <h2 className="text-2xl font-semibold tracking-tight text-white mb-4">Create New Blog Post</h2>
                         <form onSubmit={handleCreatePost}>
                             <div className="mb-4">
                                 <label htmlFor="title" className="block text-sm font-medium text-slate-200 mb-2">
@@ -512,7 +519,7 @@ export default function BlogsPage() {
                                     value={newPostTitle}
                                     onChange={(e) => setNewPostTitle(e.target.value)}
                                     maxLength={120}
-                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-300"
                                     placeholder="Enter blog heading..."
                                     required
                                 />
@@ -530,7 +537,7 @@ export default function BlogsPage() {
                                     value={newPostContent}
                                     onChange={(e) => setNewPostContent(e.target.value)}
                                     rows={6}
-                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-300 resize-none"
                                     placeholder="Write your blog post here... (Max 5000 characters)"
                                     maxLength={5000}
                                     required
@@ -549,7 +556,7 @@ export default function BlogsPage() {
                                     type="file"
                                     accept="image/*"
                                     onChange={(e) => setNewPostImage(e.target.files?.[0] || null)}
-                                    className="w-full px-4 py-3 border border-white/15 bg-slate-950 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 border border-white/15 bg-black/50 text-white rounded-lg focus:ring-2 focus:ring-amber-300/40 focus:border-amber-300"
                                 />
                             </div>
                             <div className="flex flex-wrap justify-end gap-3">
@@ -568,7 +575,7 @@ export default function BlogsPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !newPostTitle.trim() || !newPostContent.trim()}
-                                    className="min-h-11 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                                    className="min-h-11 px-6 py-2 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 disabled:bg-amber-200/70 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                                 >
                                     {isSubmitting ? (
                                         <>
@@ -600,7 +607,7 @@ export default function BlogsPage() {
                 )}
 
                 {posts.length === 0 ? (
-                    <div className="text-center py-16 bg-slate-900/70 rounded-xl border border-white/10">
+                    <div className="text-center py-16 bg-zinc-900/65 rounded-2xl border border-white/10 shadow-lg shadow-black/40">
                         <div className="text-slate-400 mb-4">
                             <svg
                                 className="mx-auto h-16 w-16"
@@ -625,14 +632,14 @@ export default function BlogsPage() {
                         {isAuthenticated && (
                             <button
                                 onClick={() => setShowCreateForm(true)}
-                                className="min-h-11 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                className="min-h-11 px-6 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors font-medium"
                             >
                                 Create First Post
                             </button>
                         )}
                     </div>
                 ) : filteredPosts.length === 0 ? (
-                    <div className="text-center py-16 bg-slate-900/70 rounded-xl border border-white/10">
+                    <div className="text-center py-16 bg-zinc-900/65 rounded-2xl border border-white/10 shadow-lg shadow-black/40">
                         <h3 className="text-xl font-semibold text-white mb-2">No matching posts found</h3>
                         <p className="text-slate-400 mb-6">Try a different keyword, choose another type, or clear your search.</p>
                         <button
@@ -641,7 +648,7 @@ export default function BlogsPage() {
                                 setSearchTerm("");
                                 setSelectedType("All");
                             }}
-                            className="min-h-11 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                            className="min-h-11 px-6 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors font-medium"
                         >
                             Clear Search & Filters
                         </button>
@@ -651,7 +658,7 @@ export default function BlogsPage() {
                         {filteredPosts.map((post) => (
                             <article
                                 key={post._id}
-                                className="bg-slate-900/75 rounded-xl border border-white/10 hover:border-white/20 transition-all duration-300 p-6"
+                                className="bg-zinc-900/70 rounded-2xl border border-white/10 hover:border-amber-200/30 hover:-translate-y-0.5 transition-all duration-300 p-6 shadow-lg shadow-black/40"
                             >
                                 {(() => {
                                     const isExpanded = !!expandedPosts[post._id];
@@ -662,11 +669,11 @@ export default function BlogsPage() {
 
                                     return (
                                         <>
-                                <div className="flex items-start justify-between mb-4">
+                                <div className="flex items-start justify-between mb-5">
                                     <div className="flex items-center gap-3">
                                         {post.user?._id ? (
                                             <Link href={`/users/${post.user._id}`} className="flex items-center gap-3 group">
-                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
                                                     {post.user?.profileImage ? (
                                                         <img
                                                             src={buildProfileImageUrl(post.user.profileImage)}
@@ -678,17 +685,17 @@ export default function BlogsPage() {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-semibold text-white text-lg group-hover:text-blue-300 transition-colors">
+                                                    <h3 className="font-semibold text-white text-lg group-hover:text-amber-100 transition-colors leading-tight">
                                                         {post.user?.name || "Unknown User"}
                                                     </h3>
-                                                    <p className="text-sm text-slate-400">
+                                                    <p className="text-sm text-slate-400 mt-0.5">
                                                         {formatDate(post.date)}
                                                     </p>
                                                 </div>
                                             </Link>
                                         ) : (
                                             <>
-                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                                                <div className="w-12 h-12 rounded-full bg-linear-to-br from-zinc-700 to-zinc-900 ring-2 ring-amber-100/20 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
                                                     {post.user?.profileImage ? (
                                                         <img
                                                             src={buildProfileImageUrl(post.user.profileImage)}
@@ -700,22 +707,22 @@ export default function BlogsPage() {
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <h3 className="font-semibold text-white text-lg">
+                                                    <h3 className="font-semibold text-white text-lg leading-tight">
                                                         {post.user?.name || "Unknown User"}
                                                     </h3>
-                                                    <p className="text-sm text-slate-400">
+                                                    <p className="text-sm text-slate-400 mt-0.5">
                                                         {formatDate(post.date)}
                                                     </p>
                                                 </div>
                                             </>
                                         )}
                                     </div>
-                                    <span className="text-xs px-2 py-1 rounded-full bg-blue-900/40 border border-blue-500/40 text-blue-200">
+                                    <span className="text-xs px-3 py-1 rounded-full bg-amber-200/10 border border-amber-200/30 text-amber-100 font-medium tracking-wide">
                                         {getBlogType(post.content)}
                                     </span>
                                 </div>
 
-                                <h3 className="text-xl font-semibold text-white mb-3">
+                                <h3 className="text-2xl font-semibold tracking-tight text-white mb-3">
                                     {post.title || "Untitled"}
                                 </h3>
 
@@ -724,17 +731,17 @@ export default function BlogsPage() {
                                         <img
                                             src={buildPostImageUrl(post.image)}
                                             alt={post.title || "Post image"}
-                                            className="mb-4 w-full max-h-96 object-cover rounded-lg border border-white/10"
+                                            className="mb-4 w-full max-h-96 object-cover rounded-xl border border-white/10"
                                         />
                                     )}
-                                    <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base">
+                                    <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base md:text-[1.03rem]">
                                         {displayedContent}
                                     </p>
                                     {isLongPost && (
                                         <button
                                             type="button"
                                             onClick={() => toggleExpandedPost(post._id)}
-                                            className="mt-2 text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                                            className="mt-2 text-sm text-amber-200 hover:text-amber-100 transition-colors"
                                         >
                                             {isExpanded ? "Show less" : "Read more"}
                                         </button>
@@ -744,10 +751,10 @@ export default function BlogsPage() {
                                 <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/10">
                                     <button
                                         onClick={() => handleLike(post._id)}
-                                        className={`flex items-center gap-2 transition-colors ${
+                                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 transition-colors ${
                                             isAuthenticated 
-                                                ? "text-slate-300 hover:text-red-400" 
-                                                : "text-slate-500 cursor-pointer hover:text-red-300"
+                                                ? "text-slate-300 border-white/15 hover:text-red-400 hover:border-red-500/40" 
+                                                : "text-slate-500 border-white/10 cursor-pointer hover:text-red-300"
                                         }`}
                                         title={isAuthenticated ? "Like this post" : "Sign in to like"}
                                     >
@@ -784,21 +791,21 @@ export default function BlogsPage() {
 
                 {/* Call to Action for Non-Authenticated Users */}
                 {!isAuthenticated && filteredPosts.length > 0 && (
-                    <div className="mt-12 bg-linear-to-r from-blue-700 to-purple-700 rounded-2xl p-8 text-center text-white shadow-xl">
+                    <div className="mt-12 bg-zinc-900/65 rounded-2xl border border-white/10 p-8 text-center text-white shadow-lg shadow-black/40">
                         <h3 className="text-2xl font-bold mb-3">Ready to share your story?</h3>
-                        <p className="text-blue-100 mb-6 text-lg">
+                        <p className="text-slate-300 mb-6 text-lg">
                             Join our community and start creating amazing content today!
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
                             <button
                                 onClick={() => router.push('/register')}
-                                className="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold shadow-lg"
+                                className="min-h-11 px-8 py-3 bg-amber-300 text-slate-950 rounded-lg hover:bg-amber-200 transition-colors font-semibold"
                             >
                                 Get Started Free
                             </button>
                             <button
                                 onClick={() => router.push('/login')}
-                                className="px-8 py-3 bg-transparent border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition-colors font-semibold"
+                                className="min-h-11 px-8 py-3 bg-transparent border border-white/25 text-slate-200 rounded-lg hover:bg-zinc-800 transition-colors font-semibold"
                             >
                                 Sign In
                             </button>
