@@ -256,14 +256,6 @@ export default function BlogsPage() {
                                         </div>
                                     </div>
 
-                                    {post.image && (
-                                        <img
-                                            src={buildPostImageUrl(post.image)}
-                                            alt={post.title || "Post image"}
-                                            className="mb-4 w-full max-h-80 object-cover rounded-lg border border-white/10"
-                                        />
-                                    )}
-
                                     {isEditing ? (
                                         <div className="space-y-3">
                                             <input
@@ -285,6 +277,15 @@ export default function BlogsPage() {
                                         <>
                                                 <h2 className={`text-xl font-semibold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>{post.title || "Untitled Post"}</h2>
                                                 <p className={`whitespace-pre-wrap leading-relaxed ${isDark ? "text-slate-200" : "text-slate-700"}`}>{displayedContent}</p>
+                                                {post.image && (
+                                                    <div className="mt-4 flex justify-center">
+                                                        <img
+                                                            src={buildPostImageUrl(post.image)}
+                                                            alt={post.title || "Post image"}
+                                                            className="w-full max-w-3xl max-h-80 object-cover rounded-lg border border-white/10"
+                                                        />
+                                                    </div>
+                                                )}
                                             {shouldTruncate && (
                                                 <button
                                                     type="button"
