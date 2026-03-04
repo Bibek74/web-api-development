@@ -7,6 +7,12 @@ export interface IPost extends Document {
     content: string;
     image?: string;
     likes: mongoose.Types.ObjectId[];
+    favorites: mongoose.Types.ObjectId[];
+    comments: {
+        user: mongoose.Types.ObjectId;
+        text: string;
+        date: Date;
+    }[];
 }
 
 const postSchema = new Schema<IPost>({
@@ -30,6 +36,30 @@ const postSchema = new Schema<IPost>({
         {
             type: Schema.Types.ObjectId,
             ref: "users"
+        }
+    ],
+    favorites: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "users"
+        }
+    ],
+    comments: [
+        {
+            user: {
+                type: Schema.Types.ObjectId,
+                ref: "users",
+                required: true
+            },
+            text: {
+                type: String,
+                required: true,
+                trim: true
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
         }
     ]
 });
