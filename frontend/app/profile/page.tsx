@@ -6,7 +6,7 @@ import { postApi, Post } from "@/lib/api/posts";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/lib/toast";
-import { buildPostImageUrl, setSessionUser } from "@/lib/user-session";
+import { buildPostImageUrl, clearSessionCookies, setSessionUser } from "@/lib/user-session";
 
 export default function ProfilePage() {
     const router = useRouter();
@@ -30,6 +30,8 @@ export default function ProfilePage() {
     const [isCreatingPost, setIsCreatingPost] = useState(false);
     const [expandedPosts, setExpandedPosts] = useState<Record<string, boolean>>({});
     const [postSearchTerm, setPostSearchTerm] = useState("");
+    const [deletePassword, setDeletePassword] = useState("");
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
     const POST_PREVIEW_LENGTH = 280;
 
     const handleBack = () => {
@@ -301,6 +303,37 @@ export default function ProfilePage() {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        const password = deletePassword.trim();
+        if (!password) {
+            toast.error("Please enter your password to delete account");
+            return;
+        }
+
+        const shouldDelete = await toast.confirm(
+            "This will permanently delete your account. This action cannot be undone.",
+            "Delete Account"
+        );
+
+        if (!shouldDelete) return;
+
+        try {
+            setIsDeletingAccount(true);
+            const response = await profileApi.deleteProfile(password);
+            if (response.success) {
+                clearSessionCookies();
+                toast.success(response.message || "Account deleted successfully");
+                router.replace("/login");
+                return;
+            }
+            toast.error(response.message || "Failed to delete account");
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Error deleting account");
+        } finally {
+            setIsDeletingAccount(false);
+        }
+    };
+
     if (!hydrated) return null;
 
     if (loading) {
@@ -506,6 +539,7 @@ export default function ProfilePage() {
                                             onClick={() => {
                                                 setIsEditMode(false);
                                                 setEditData({ name: profile.name, email: profile.email });
+                                                setDeletePassword("");
                                             }}
                                             className="px-8 py-3 border border-white/20 text-slate-300 rounded-lg hover:bg-slate-700/50 transition-colors font-semibold"
                                         >
@@ -513,6 +547,30 @@ export default function ProfilePage() {
                                         </button>
                                     </div>
                                 </form>
+
+                                <div className="mt-8 border-t border-red-500/30 pt-6">
+                                    <h4 className="text-lg font-bold text-red-300 mb-2">Delete Account</h4>
+                                    <p className="text-sm text-slate-400 mb-4">
+                                        Enter your password and delete your account permanently.
+                                    </p>
+                                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                        <input
+                                            type="password"
+                                            value={deletePassword}
+                                            onChange={(e) => setDeletePassword(e.target.value)}
+                                            placeholder="Enter password to confirm"
+                                            className="w-full sm:max-w-xs px-4 py-3 bg-black/50 border border-red-500/40 rounded-lg focus:ring-2 focus:ring-red-500/40 focus:border-red-500 transition-all text-white placeholder-slate-500"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleDeleteAccount}
+                                            disabled={isDeletingAccount}
+                                            className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-500/60 disabled:cursor-not-allowed transition-colors font-semibold"
+                                        >
+                                            {isDeletingAccount ? "Deleting..." : "Delete Account"}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
