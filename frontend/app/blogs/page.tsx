@@ -5,7 +5,7 @@ import { postApi, Post } from "@/lib/api/posts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/toast";
-import { buildPostImageUrl, buildProfileImageUrl } from "@/lib/user-session";
+import { buildPostImageUrl, buildProfileImageUrl, getSessionUser } from "@/lib/user-session";
 
 const BLOG_TYPE_KEYWORDS: Record<string, string[]> = {
     Technology: ["tech", "ai", "software", "coding", "programming", "javascript", "typescript", "react", "node", "backend", "frontend", "database", "api"],
@@ -81,6 +81,9 @@ export default function BlogsPage() {
     const [showSearchPanel, setShowSearchPanel] = useState(false);
     const [selectedType, setSelectedType] = useState("All");
     const [showNameSuggestions, setShowNameSuggestions] = useState(false);
+    const [commentDrafts, setCommentDrafts] = useState<Record<string, string>>({});
+    const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const router = useRouter();
     const toast = useToast();
     const POST_PREVIEW_LENGTH = 280;
@@ -96,6 +99,7 @@ export default function BlogsPage() {
                 }, {} as Record<string, string>);
                 
                 setIsAuthenticated(!!cookies.auth_token);
+                setCurrentUserId(getSessionUser()?._id || null);
             }
         };
         checkAuth();
@@ -178,6 +182,58 @@ export default function BlogsPage() {
             console.error("Error creating post:", error);
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleFavorite = async (id: string) => {
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await postApi.favoriteUnfavoritePost(id);
+            if (response.success) {
+                fetchPosts();
+            } else {
+                toast.error(response.message || "Failed to update favorites");
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Error updating favorites");
+            if (error.response?.status === 401) {
+                router.push('/login');
+            }
+        }
+    };
+
+    const handleAddComment = async (id: string) => {
+        if (!isAuthenticated) {
+            router.push('/login');
+            return;
+        }
+
+        const text = (commentDrafts[id] || "").trim();
+        if (!text) {
+            toast.error("Please write a comment first");
+            return;
+        }
+
+        try {
+            setActiveCommentPostId(id);
+            const response = await postApi.addComment(id, text);
+            if (response.success) {
+                setCommentDrafts((prev) => ({ ...prev, [id]: "" }));
+                fetchPosts();
+            } else {
+                toast.error(response.message || "Failed to add comment");
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Error adding comment");
+            if (error.response?.status === 401) {
+                router.push('/login');
+            }
+        } finally {
+            setActiveCommentPostId(null);
         }
     };
 
@@ -663,6 +719,8 @@ export default function BlogsPage() {
                                 {(() => {
                                     const isExpanded = !!expandedPosts[post._id];
                                     const isLongPost = post.content.length > POST_PREVIEW_LENGTH;
+                                    const hasLiked = !!currentUserId && post.likes.includes(currentUserId);
+                                    const hasFavorited = !!currentUserId && (post.favorites || []).includes(currentUserId);
                                     const displayedContent = isExpanded || !isLongPost
                                         ? post.content
                                         : `${post.content.slice(0, POST_PREVIEW_LENGTH)}...`;
@@ -762,7 +820,7 @@ export default function BlogsPage() {
                                     >
                                         <svg
                                             className="w-5 h-5"
-                                            fill={post.likes.length > 0 ? "currentColor" : "none"}
+                                            fill={hasLiked ? "currentColor" : "none"}
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
                                         >
@@ -777,11 +835,64 @@ export default function BlogsPage() {
                                             {post.likes.length} {post.likes.length === 1 ? "Like" : "Likes"}
                                         </span>
                                     </button>
+
+                                    <button
+                                        onClick={() => handleFavorite(post._id)}
+                                        className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 transition-colors ${
+                                            isAuthenticated
+                                                ? "text-slate-300 border-white/15 hover:text-amber-200 hover:border-amber-200/50"
+                                                : "text-slate-500 border-white/10 cursor-pointer hover:text-amber-200"
+                                        }`}
+                                        title={isAuthenticated ? "Add to favorites" : "Sign in to favorite"}
+                                    >
+                                        <svg className="w-5 h-5" fill={hasFavorited ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.958a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.367 2.447a1 1 0 00-.364 1.118l1.287 3.958c.3.921-.755 1.688-1.539 1.118l-3.366-2.446a1 1 0 00-1.176 0l-3.366 2.446c-.784.57-1.838-.197-1.539-1.118l1.287-3.958a1 1 0 00-.364-1.118L2.98 9.385c-.783-.57-.38-1.81.588-1.81H7.73a1 1 0 00.95-.69l1.286-3.958z" />
+                                        </svg>
+                                        <span className="font-medium">
+                                            {(post.favorites || []).length} {(post.favorites || []).length === 1 ? "Favorite" : "Favorites"}
+                                        </span>
+                                    </button>
                                     {!isAuthenticated && (
                                         <span className="text-sm text-slate-400 ml-auto">
                                             👉 Sign in to interact
                                         </span>
                                     )}
+                                </div>
+
+                                <div className="mt-4 rounded-xl border border-white/10 bg-black/35 p-4">
+                                    <h4 className="text-sm font-semibold text-slate-200 mb-3">Comments</h4>
+                                    <div className="space-y-3 mb-4 max-h-56 overflow-y-auto pr-1">
+                                        {(post.comments || []).length > 0 ? (
+                                            post.comments!.map((comment) => (
+                                                <div key={comment._id || `${comment.user?._id}-${comment.date}-${comment.text.slice(0, 10)}`} className="rounded-lg border border-white/10 bg-zinc-900/60 p-3">
+                                                    <p className="text-sm text-amber-100 font-medium">{comment.user?.name || "User"}</p>
+                                                    <p className="text-sm text-slate-200 mt-1 whitespace-pre-wrap">{comment.text}</p>
+                                                    <p className="text-xs text-slate-500 mt-2">{formatDate(comment.date)}</p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="text-sm text-slate-400">No comments yet. Be the first to comment.</p>
+                                        )}
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                        <input
+                                            type="text"
+                                            value={commentDrafts[post._id] || ""}
+                                            onChange={(e) => setCommentDrafts((prev) => ({ ...prev, [post._id]: e.target.value }))}
+                                            placeholder={isAuthenticated ? "Write a comment..." : "Sign in to write a comment"}
+                                            disabled={!isAuthenticated}
+                                            className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 text-slate-100 placeholder:text-slate-500 focus:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-300/40 disabled:cursor-not-allowed disabled:opacity-70"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => handleAddComment(post._id)}
+                                            disabled={!isAuthenticated || activeCommentPostId === post._id}
+                                            className="min-h-10 px-4 py-2 rounded-lg bg-amber-300 text-slate-950 hover:bg-amber-200 disabled:bg-amber-200/70 disabled:cursor-not-allowed transition-colors font-medium"
+                                        >
+                                            {activeCommentPostId === post._id ? "Posting..." : "Post"}
+                                        </button>
+                                    </div>
                                 </div>
                                         </>
                                     );
