@@ -727,16 +727,18 @@ export default function BlogsPage() {
                                 </h3>
 
                                 <div className="mb-4">
-                                    {post.image && (
-                                        <img
-                                            src={buildPostImageUrl(post.image)}
-                                            alt={post.title || "Post image"}
-                                            className="mb-4 w-full max-h-96 object-cover rounded-xl border border-white/10"
-                                        />
-                                    )}
                                     <p className="text-slate-200 whitespace-pre-wrap leading-relaxed text-base md:text-[1.03rem]">
                                         {displayedContent}
                                     </p>
+                                    {post.image && (
+                                        <div className="mt-4 flex justify-center">
+                                            <img
+                                                src={buildPostImageUrl(post.image)}
+                                                alt={post.title || "Post image"}
+                                                className="w-full max-w-3xl max-h-96 object-cover rounded-xl border border-white/10"
+                                            />
+                                        </div>
+                                    )}
                                     {isLongPost && (
                                         <button
                                             type="button"
