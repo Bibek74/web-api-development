@@ -8,11 +8,22 @@ export interface Post {
         name: string;
         profileImage?: string;
     };
+    comments?: {
+        _id?: string;
+        user: {
+            _id: string;
+            name: string;
+            profileImage?: string;
+        };
+        text: string;
+        date: string;
+    }[];
     title?: string;
     content: string;
     image?: string;
     date: string;
     likes: string[];
+    favorites?: string[];
 }
 
 export interface PostResponse {
@@ -93,6 +104,18 @@ export const postApi = {
     // Get post likes
     getPostLikes: async (id: string) => {
         const response = await axiosInstance.get(API.POST.LIKES(id));
+        return response.data;
+    },
+
+    // Favorite/Unfavorite post
+    favoriteUnfavoritePost: async (id: string) => {
+        const response = await axiosInstance.post(API.POST.FAVORITE_UNFAVORITE(id));
+        return response.data;
+    },
+
+    // Add comment to post
+    addComment: async (id: string, text: string) => {
+        const response = await axiosInstance.post(API.POST.COMMENT(id), { text });
         return response.data;
     }
 };
