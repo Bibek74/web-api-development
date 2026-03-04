@@ -13,6 +13,8 @@ export const API = {
         UPDATE: (id: string) => `/api/post/update/${id}`,
         DELETE: (id: string) => `/api/post/delete-post/${id}`,
         LIKE_UNLIKE: (id: string) => `/api/post/like-unlike/${id}`,
+        FAVORITE_UNFAVORITE: (id: string) => `/api/post/favorite-unfavorite/${id}`,
+        COMMENT: (id: string) => `/api/post/comment/${id}`,
         LIKES: (id: string) => `/api/post/user/likes/${id}`
     },
     PROFILE: {
