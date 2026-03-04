@@ -98,18 +98,21 @@ export class ProfileController {
                 });
                 return;
             }
-            bcrypt.compare(validatedData.password, user.password, async (err, result) => {
-                if (!result) {
-                    return res.send({
-                        message: "Password do not match!",
-                        success: false
-                    });
-                }
-                const deletedUser = await userModel.findOneAndDelete({ _id: req.user!.userId });
+            const isPasswordValid = await bcrypt.compare(validatedData.password, user.password);
+            if (!isPasswordValid) {
                 res.send({
-                    message: `Your Profile ${req.user!.name} has been deleted successfully!`,
-                    success: true
+                    message: "Password do not match!",
+                    success: false
                 });
+                return;
+            }
+
+            await postModel.deleteMany({ user: req.user!.userId });
+            await userModel.findOneAndDelete({ _id: req.user!.userId });
+
+            res.send({
+                message: `Your Profile ${req.user!.name} has been deleted successfully!`,
+                success: true
             });
         } catch (err) {
             res.send({
