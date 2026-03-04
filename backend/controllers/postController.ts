@@ -27,7 +27,9 @@ export class PostController {
                 user: user._id,
                 title: validatedData.title,
                 content: validatedData.content,
-                image: validatedData.image || ""
+                image: validatedData.image || "",
+                favorites: [],
+                comments: []
             });
             user.posts.push(createdPost._id as any);
             await user.save();
@@ -50,6 +52,7 @@ export class PostController {
             const allPosts = await postModel
                 .find()
                 .populate("user", "name profileImage")
+                .populate("comments.user", "name profileImage")
                 .sort({ date: -1 });
             res.send({
                 message: "Posts fetched successfully!",
@@ -124,6 +127,86 @@ export class PostController {
             });
         } catch (err) {
             res.send({
+                message: (err as Error).message ?? "Unknown error",
+                success: false
+            });
+        }
+    };
+
+    // Favorite/Unfavorite a post By id
+    favoriteUnfavoriteById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const post = await postModel.findOne({ _id: req.params.id });
+            if (!post) {
+                res.send({
+                    message: "Post not found",
+                    success: false
+                });
+                return;
+            }
+
+            if (post.favorites.includes(req.user!.userId as any)) {
+                await postModel.findOneAndUpdate(
+                    { _id: req.params.id },
+                    { $pull: { favorites: req.user!.userId } }
+                );
+                res.send({
+                    message: "Removed from favorites",
+                    success: true
+                });
+                return;
+            }
+
+            post.favorites.push(req.user!.userId as any);
+            await post.save();
+            res.send({
+                message: "Added to favorites",
+                success: true
+            });
+        } catch (err) {
+            res.send({
+                message: (err as Error).message ?? "Unknown error",
+                success: false
+            });
+        }
+    };
+
+    // Add Comment By post id
+    addCommentById = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const text = req.body?.text?.trim();
+
+            if (!text) {
+                res.status(400).send({
+                    message: "Comment cannot be empty",
+                    success: false
+                });
+                return;
+            }
+
+            const post = await postModel.findOne({ _id: req.params.id });
+            if (!post) {
+                res.status(404).send({
+                    message: "Post not found",
+                    success: false
+                });
+                return;
+            }
+
+            post.comments.push({
+                user: req.user!.userId as any,
+                text,
+                date: new Date()
+            } as any);
+
+            await post.save();
+
+            res.send({
+                message: "Comment added successfully",
+                success: true
+            });
+        } catch (err) {
+            res.status(500).send({
                 message: (err as Error).message ?? "Unknown error",
                 success: false
             });
